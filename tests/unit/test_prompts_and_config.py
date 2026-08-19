@@ -46,10 +46,16 @@ def test_retention_judge_prompt_is_verbatim(prompts: PromptRegistry) -> None:
     assert set(prompt.placeholders) == {"injected_sc", "compacted_context"}
 
 
-def test_unfetched_compaction_prompt_raises_the_blocking_gate(prompts: PromptRegistry) -> None:
-    """Execution contract rule 4: fetch it or block. There is no fallback prompt."""
+def test_unfetched_compaction_prompt_raises_the_blocking_gate(tmp_path: Path) -> None:
+    """Execution contract rule 4: fetch it or block. There is no fallback prompt.
+
+    Exercised against an empty registry so the assertion holds whether or not this checkout
+    has run the fetch. The gate is a mechanism, not a fact about the current working tree.
+    """
+    (tmp_path / "judging").mkdir()
+    empty = PromptRegistry(tmp_path)
     with pytest.raises(PromptNotFetchedError) as excinfo:
-        prompts.get("anthropic")
+        empty.get("anthropic")
     assert "BLOCKING GATE" in str(excinfo.value)
     assert "U-01" in str(excinfo.value)
     assert "fetch_prompts.py" in str(excinfo.value)
@@ -63,11 +69,49 @@ def test_every_required_prompt_reports_its_unknown_id(prompts: PromptRegistry) -
             prompts.get(requirement.prompt_id)
 
 
-def test_fetch_gate_reports_all_missing(prompts: PromptRegistry) -> None:
-    missing = {req.prompt_id for req in prompts.missing_required()}
+def test_fetch_gate_reports_all_missing(tmp_path: Path) -> None:
+    """Every externally sourced prompt is accounted for, and the gate refuses to open."""
+    (tmp_path / "judging").mkdir()
+    empty = PromptRegistry(tmp_path)
+    missing = {req.prompt_id for req in empty.missing_required()}
     assert missing == {"anthropic", "pi_mono", "anthropic_sc_targeted", "sc_extractor"}
     with pytest.raises(PromptNotFetchedError):
-        prompts.assert_fetch_gate_open()
+        empty.assert_fetch_gate_open()
+
+
+def test_fetch_gate_opens_once_every_prompt_is_present(tmp_path: Path) -> None:
+    """The complement: with all four present the gate opens and get() stops raising."""
+    (tmp_path / "compaction").mkdir()
+    (tmp_path / "extraction").mkdir()
+    for prompt_id, subdir in (
+        ("anthropic", "compaction"),
+        ("pi_mono", "compaction"),
+        ("anthropic_sc_targeted", "compaction"),
+        ("sc_extractor", "extraction"),
+    ):
+        payload = {
+            "id": prompt_id,
+            "version": "v1",
+            "provenance": "fetched",
+            "source_url": "https://example.invalid/repo",
+            "fetched_at": "2026-08-19T00:00:00Z",
+            "text": f"stand in body for {prompt_id}",
+        }
+        (tmp_path / subdir / f"{prompt_id}.v1.yaml").write_text(
+            yaml.safe_dump(payload), encoding="utf-8"
+        )
+    registry = PromptRegistry(tmp_path)
+    assert registry.missing_required() == ()
+    registry.assert_fetch_gate_open()
+    assert registry.get("anthropic").provenance == "fetched"
+
+
+def test_working_tree_gate_state_is_reported_not_asserted(prompts: PromptRegistry) -> None:
+    """Informational: whichever state this checkout is in, it must be self consistent."""
+    for requirement in prompts.missing_required():
+        assert not prompts.has(requirement.prompt_id)
+        with pytest.raises(PromptNotFetchedError):
+            prompts.get(requirement.prompt_id)
 
 
 def test_sc_targeted_addendum_is_stored_verbatim(prompts: PromptRegistry) -> None:
