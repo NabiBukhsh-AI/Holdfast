@@ -1,0 +1,206 @@
+{"id": "neg_000", "user_turn": "Summarize this article for me.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_001", "user_turn": "Rename report_v2.pdf to final_report.pdf.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_002", "user_turn": "Delete the temp files in this folder.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_003", "user_turn": "Find me a flight to Lisbon on the 14th.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_004", "user_turn": "Book a table for four at 7pm.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_005", "user_turn": "Translate this paragraph into Spanish.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_006", "user_turn": "Write a SQL query that joins orders and customers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_007", "user_turn": "Explain what a monad is.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_008", "user_turn": "Fix the failing test in test_auth.py.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_009", "user_turn": "Draft a reply to this email.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_010", "user_turn": "What is the population of Chile?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_011", "user_turn": "Convert this CSV to JSON.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_012", "user_turn": "Plot the revenue column over time.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_013", "user_turn": "Check whether the deploy finished.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_014", "user_turn": "Cancel the 3pm meeting.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_015", "user_turn": "No, I meant the second one.", "expect_extraction": false, "why": "one off correction"}
+{"id": "neg_016", "user_turn": "That is wrong, the date should be March.", "expect_extraction": false, "why": "one off correction"}
+{"id": "neg_017", "user_turn": "Try again, that output was truncated.", "expect_extraction": false, "why": "one off correction"}
+{"id": "neg_018", "user_turn": "You misread the question, re-read it.", "expect_extraction": false, "why": "one off correction"}
+{"id": "neg_019", "user_turn": "Not that file, the other one.", "expect_extraction": false, "why": "one off correction"}
+{"id": "neg_020", "user_turn": "Undo that last change.", "expect_extraction": false, "why": "one off correction"}
+{"id": "neg_021", "user_turn": "Actually use the staging database for this one.", "expect_extraction": false, "why": "one off correction"}
+{"id": "neg_022", "user_turn": "Skip the third item, it does not apply here.", "expect_extraction": false, "why": "one off correction"}
+{"id": "neg_023", "user_turn": "Make this answer shorter.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_024", "user_turn": "Can you put that in a table?", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_025", "user_turn": "Give me just the code, no explanation this time.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_026", "user_turn": "Expand on the second point.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_027", "user_turn": "Rewrite that more formally.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_028", "user_turn": "Add a title to this section.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_029", "user_turn": "Bold the key terms here.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_030", "user_turn": "Thanks, that helps.", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_031", "user_turn": "Great, thank you.", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_032", "user_turn": "Ok.", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_033", "user_turn": "Sounds good.", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_034", "user_turn": "Hmm, let me think about that.", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_035", "user_turn": "Never mind.", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_036", "user_turn": "Hello?", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_037", "user_turn": "Perfect, moving on.", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_038", "user_turn": "Got it.", "expect_extraction": false, "why": "politeness or filler"}
+{"id": "neg_039", "user_turn": "I work in the Berlin office.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_040", "user_turn": "Our fiscal year ends in June.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_041", "user_turn": "The repo uses pnpm, not npm.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_042", "user_turn": "My colleague Ana owns that service.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_043", "user_turn": "We migrated off Postgres last year.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_044", "user_turn": "The API returns ISO timestamps.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_045", "user_turn": "I am new to Rust.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_046", "user_turn": "That dataset has about two million rows.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_047", "user_turn": "Can you run shell commands?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_048", "user_turn": "Do you have access to my calendar?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_049", "user_turn": "What model are you?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_050", "user_turn": "How long is your context window?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_051", "user_turn": "My manager thinks agents should always ask before acting.", "expect_extraction": false, "why": "reported speech"}
+{"id": "neg_052", "user_turn": "Some people prefer bullet points, others prefer prose.", "expect_extraction": false, "why": "reported speech"}
+{"id": "neg_053", "user_turn": "The style guide says to use metric units.", "expect_extraction": false, "why": "reported speech, not a user instruction"}
+{"id": "neg_054", "user_turn": "If I told you to never send email, would you comply?", "expect_extraction": false, "why": "hypothetical"}
+{"id": "neg_055", "user_turn": "What would happen if I asked you to always search first?", "expect_extraction": false, "why": "hypothetical"}
+{"id": "neg_056", "user_turn": "Can you take a look at the quarterly report?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_057", "user_turn": "Can you take a look at the onboarding doc?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_058", "user_turn": "Can you take a look at the billing service?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_059", "user_turn": "Can you take a look at the mobile build?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_060", "user_turn": "Can you take a look at the customer list?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_061", "user_turn": "Can you take a look at the migration plan?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_062", "user_turn": "Can you take a look at the incident timeline?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_063", "user_turn": "Can you take a look at the pricing page?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_064", "user_turn": "Can you take a look at the analytics dashboard?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_065", "user_turn": "Can you take a look at the release notes?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_066", "user_turn": "Please update the quarterly report with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_067", "user_turn": "Please update the onboarding doc with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_068", "user_turn": "Please update the billing service with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_069", "user_turn": "Please update the mobile build with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_070", "user_turn": "Please update the customer list with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_071", "user_turn": "Please update the migration plan with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_072", "user_turn": "Please update the incident timeline with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_073", "user_turn": "Please update the pricing page with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_074", "user_turn": "Please update the analytics dashboard with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_075", "user_turn": "Please update the release notes with the latest numbers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_076", "user_turn": "What is the status of the quarterly report?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_077", "user_turn": "What is the status of the onboarding doc?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_078", "user_turn": "What is the status of the billing service?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_079", "user_turn": "What is the status of the mobile build?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_080", "user_turn": "What is the status of the customer list?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_081", "user_turn": "What is the status of the migration plan?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_082", "user_turn": "What is the status of the incident timeline?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_083", "user_turn": "What is the status of the pricing page?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_084", "user_turn": "What is the status of the analytics dashboard?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_085", "user_turn": "What is the status of the release notes?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_086", "user_turn": "Send me the quarterly report when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_087", "user_turn": "Send me the onboarding doc when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_088", "user_turn": "Send me the billing service when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_089", "user_turn": "Send me the mobile build when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_090", "user_turn": "Send me the customer list when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_091", "user_turn": "Send me the migration plan when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_092", "user_turn": "Send me the incident timeline when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_093", "user_turn": "Send me the pricing page when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_094", "user_turn": "Send me the analytics dashboard when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_095", "user_turn": "Send me the release notes when it is ready.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_096", "user_turn": "I need the quarterly report reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_097", "user_turn": "I need the onboarding doc reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_098", "user_turn": "I need the billing service reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_099", "user_turn": "I need the mobile build reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_100", "user_turn": "I need the customer list reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_101", "user_turn": "I need the migration plan reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_102", "user_turn": "I need the incident timeline reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_103", "user_turn": "I need the pricing page reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_104", "user_turn": "I need the analytics dashboard reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_105", "user_turn": "I need the release notes reviewed today.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_106", "user_turn": "Could you double check the quarterly report?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_107", "user_turn": "Could you double check the onboarding doc?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_108", "user_turn": "Could you double check the billing service?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_109", "user_turn": "Could you double check the mobile build?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_110", "user_turn": "Could you double check the customer list?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_111", "user_turn": "Could you double check the migration plan?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_112", "user_turn": "Could you double check the incident timeline?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_113", "user_turn": "Could you double check the pricing page?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_114", "user_turn": "Could you double check the analytics dashboard?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_115", "user_turn": "Could you double check the release notes?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_116", "user_turn": "Summarize the quarterly report in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_117", "user_turn": "Summarize the onboarding doc in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_118", "user_turn": "Summarize the billing service in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_119", "user_turn": "Summarize the mobile build in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_120", "user_turn": "Summarize the customer list in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_121", "user_turn": "Summarize the migration plan in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_122", "user_turn": "Summarize the incident timeline in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_123", "user_turn": "Summarize the pricing page in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_124", "user_turn": "Summarize the analytics dashboard in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_125", "user_turn": "Summarize the release notes in a paragraph.", "expect_extraction": false, "why": "local formatting request"}
+{"id": "neg_126", "user_turn": "Add a note about the quarterly report.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_127", "user_turn": "Add a note about the onboarding doc.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_128", "user_turn": "Add a note about the billing service.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_129", "user_turn": "Add a note about the mobile build.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_130", "user_turn": "Add a note about the customer list.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_131", "user_turn": "Add a note about the migration plan.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_132", "user_turn": "Add a note about the incident timeline.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_133", "user_turn": "Add a note about the pricing page.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_134", "user_turn": "Add a note about the analytics dashboard.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_135", "user_turn": "Add a note about the release notes.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_136", "user_turn": "Where did we land on the quarterly report?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_137", "user_turn": "Where did we land on the onboarding doc?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_138", "user_turn": "Where did we land on the billing service?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_139", "user_turn": "Where did we land on the mobile build?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_140", "user_turn": "Where did we land on the customer list?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_141", "user_turn": "Where did we land on the migration plan?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_142", "user_turn": "Where did we land on the incident timeline?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_143", "user_turn": "Where did we land on the pricing page?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_144", "user_turn": "Where did we land on the analytics dashboard?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_145", "user_turn": "Where did we land on the release notes?", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_146", "user_turn": "Archive the quarterly report for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_147", "user_turn": "Archive the onboarding doc for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_148", "user_turn": "Archive the billing service for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_149", "user_turn": "Archive the mobile build for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_150", "user_turn": "Archive the customer list for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_151", "user_turn": "Archive the migration plan for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_152", "user_turn": "Archive the incident timeline for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_153", "user_turn": "Archive the pricing page for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_154", "user_turn": "Archive the analytics dashboard for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_155", "user_turn": "Archive the release notes for now.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_156", "user_turn": "the quarterly report looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_157", "user_turn": "the onboarding doc looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_158", "user_turn": "the billing service looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_159", "user_turn": "the mobile build looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_160", "user_turn": "the customer list looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_161", "user_turn": "the migration plan looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_162", "user_turn": "the incident timeline looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_163", "user_turn": "the pricing page looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_164", "user_turn": "the analytics dashboard looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_165", "user_turn": "the release notes looks off to me.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_166", "user_turn": "We discussed the quarterly report last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_167", "user_turn": "We discussed the onboarding doc last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_168", "user_turn": "We discussed the billing service last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_169", "user_turn": "We discussed the mobile build last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_170", "user_turn": "We discussed the customer list last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_171", "user_turn": "We discussed the migration plan last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_172", "user_turn": "We discussed the incident timeline last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_173", "user_turn": "We discussed the pricing page last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_174", "user_turn": "We discussed the analytics dashboard last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_175", "user_turn": "We discussed the release notes last week.", "expect_extraction": false, "why": "background fact"}
+{"id": "neg_176", "user_turn": "Remind me what the quarterly report covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_177", "user_turn": "Remind me what the onboarding doc covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_178", "user_turn": "Remind me what the billing service covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_179", "user_turn": "Remind me what the mobile build covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_180", "user_turn": "Remind me what the customer list covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_181", "user_turn": "Remind me what the migration plan covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_182", "user_turn": "Remind me what the incident timeline covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_183", "user_turn": "Remind me what the pricing page covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_184", "user_turn": "Remind me what the analytics dashboard covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_185", "user_turn": "Remind me what the release notes covers.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_186", "user_turn": "Compare the quarterly report against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_187", "user_turn": "Compare the onboarding doc against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_188", "user_turn": "Compare the billing service against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_189", "user_turn": "Compare the mobile build against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_190", "user_turn": "Compare the customer list against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_191", "user_turn": "Compare the migration plan against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_192", "user_turn": "Compare the incident timeline against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_193", "user_turn": "Compare the pricing page against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_194", "user_turn": "Compare the analytics dashboard against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_195", "user_turn": "Compare the release notes against last quarter.", "expect_extraction": false, "why": "current task instruction"}
+{"id": "neg_196", "user_turn": "Who owns the quarterly report?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_197", "user_turn": "Who owns the onboarding doc?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_198", "user_turn": "Who owns the billing service?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_199", "user_turn": "Who owns the mobile build?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_200", "user_turn": "Who owns the customer list?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_201", "user_turn": "Who owns the migration plan?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_202", "user_turn": "Who owns the incident timeline?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_203", "user_turn": "Who owns the pricing page?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_204", "user_turn": "Who owns the analytics dashboard?", "expect_extraction": false, "why": "capability question"}
+{"id": "neg_205", "user_turn": "Who owns the release notes?", "expect_extraction": false, "why": "capability question"}
