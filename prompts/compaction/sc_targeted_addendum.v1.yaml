@@ -1,0 +1,13 @@
+# PAPER SPECIFICATION: spec section 11.4, printed verbatim by the paper.
+# This is an ADDENDUM appended to the fetched Anthropic compaction prompt.
+# It is not a compaction prompt on its own and must never be used as one.
+id: anthropic_sc_targeted_addendum
+version: v1
+provenance: paper_verbatim
+source_url: "COMPINT_ENGINEERING_SPEC section 11.4 (paper Appendix B.3)"
+composes_onto: anthropic
+model_role: compactor_addendum
+text: |-
+  Additionally, preserve every user-provided session-level constraint or requirement that
+  should continue to govern future responses. State each constraint explicitly in the
+  summary, retaining its operative conditions and details.

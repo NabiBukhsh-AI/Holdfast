@@ -1,0 +1,10 @@
+# RQ2: compaction rate and output length invariance (spec 15.7, Table 11, TASK-032).
+extends: ../base.yaml
+mode: research
+experiment: rq2_compaction_rate
+datasets: [wildchat, hermes_agent]
+sweep:
+  target_tokens: [10000, 50000, 100000]
+compactors: [gpt_oss_120b__anthropic, gpt_oss_120b__pi_mono, qwen3_30b_a3b__anthropic]
+report:
+  table: table11

@@ -1,0 +1,12 @@
+# RQ3: injection location sweep (spec 15.8, Figures 5 and 8, TASK-033/034).
+# OpenResearcher is omitted: |U^t| = 1 collapses all four conditions (FR-023).
+extends: ../base.yaml
+mode: research
+experiment: rq3_injection_location
+datasets: [wildchat, hermes_agent]
+sweep:
+  injection_condition: [top, middle, bottom, multi]
+  target_tokens: [50000, 100000]
+injection:
+  repetition_r: 5     # U-09 resolved for this sweep only, recorded in the manifest.
+compactors: [gpt_oss_120b__anthropic, gpt_oss_120b__pi_mono, qwen3_30b_a3b__anthropic]

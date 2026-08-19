@@ -1,0 +1,10 @@
+# Robustness: swap the downstream probe model (spec FR-049, Table 10, TASK-040).
+extends: ../base.yaml
+mode: research
+experiment: robustness_downstream_models
+datasets: [wildchat, hermes_agent, openresearcher]
+sweep:
+  probe_model: [gpt-oss-120b, qwen3-30b-a3b, gemma-4-e4b]
+compactors: [gpt_oss_120b__anthropic]
+report:
+  table: table10

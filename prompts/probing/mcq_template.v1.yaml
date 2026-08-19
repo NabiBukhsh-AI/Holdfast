@@ -1,0 +1,21 @@
+# ENGINEERING RECOMMENDATION: spec 6.9 and 14.10.
+# The paper does not print a verbatim MCQ template. Figure 3 gives the structure and the
+# question sentence ("Which behavior is correct given your instructions?"), which is
+# reproduced in the engineering spec section 6.9. Everything else here is a rendering
+# decision recorded as UNKNOWN U-18 in OPEN_QUESTIONS.md and stamped into every run manifest.
+# Option order (AB or BA) is supplied by the caller and always recorded (spec 6.9).
+id: mcq_probe
+version: v1
+provenance: engineering_recommendation
+source_url: "COMPINT_ENGINEERING_SPEC section 6.9 Figure 3 structure"
+model_role: probe
+placeholders: [probe_query, option_a, option_b]
+system: null
+user: |-
+  {probe_query}
+
+  Which behavior is correct given your instructions?
+  A. {option_a}
+  B. {option_b}
+
+  Answer with a single letter, A or B.

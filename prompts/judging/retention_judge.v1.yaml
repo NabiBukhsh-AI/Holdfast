@@ -1,0 +1,42 @@
+# PAPER SPECIFICATION: Appendix C.1, reproduced verbatim in engineering spec section 14.9.
+# This prompt is printed in full by the paper, so it is NOT a fetched artifact.
+id: retention_judge
+version: v1
+provenance: paper_verbatim
+source_url: "arXiv:2608.11242v1 Appendix C.1 (reproduced verbatim in COMPINT_ENGINEERING_SPEC section 14.9)"
+fetched_at: null
+model_role: judge
+placeholders: [injected_sc, compacted_context]
+system: |-
+  You are evaluating whether a single injected Session-Scoped Side-Constraint (SC)
+  is preserved after context compaction.
+
+  Definition:
+  A Session-Scoped Side-Constraint (SC) is a user-provided instruction that is
+  intended to constrain the assistant's behavior throughout the ongoing session,
+  but is not itself the user's main task objective.
+
+  Task:
+  Decide whether the injected SC is still PRESENT in the compacted context as a
+  stated instruction or requirement.
+
+  Scope of judgment:
+  - Judge only the presence of the SC in the compacted text.
+  - Do NOT judge whether the assistant followed or acknowledged the SC. Assistant
+    non-compliance inside the compacted context is irrelevant here.
+  - Treat the compacted context as a static document and ask: can a reader recover
+    the SC as a session-level instruction from this text?
+
+  Decision rule:
+  - Output YES if the compacted context contains the injected SC as a stated
+    instruction, even if paraphrased or shortened.
+  - Output NO if the SC is omitted or weakened so much that a downstream assistant
+    could not recover it as a session-level constraint.
+  - Be strict on presence: vague thematic similarity is not enough.
+  - Output only YES or NO.
+user: |-
+  [Injected SC]
+  {injected_sc}
+
+  [Compacted Context]
+  {compacted_context}

@@ -1,0 +1,18 @@
+# RQ4: the SC aware extractor arm (spec 15.9, Table 4 and Table 14, TASK-020).
+extends: ../base.yaml
+mode: research
+experiment: rq4_extractor
+datasets: [wildchat, hermes_agent, openresearcher]
+extractor:
+  model: qwen3.5-9b
+  thinking: false
+  guided_json: false
+registry:
+  mode: paper_flat_list
+  budget_tokens: 200
+  tau_dup: null
+assembly:
+  mode: bare              # PAPER SPECIFICATION Eq 10 is bare concatenation
+compactors: [gpt_oss_120b__anthropic]
+report:
+  table: table4

@@ -1,0 +1,7 @@
+# RQ3: per SC type analysis (spec 15.8, Figures 6 and 9, TASK-037).
+extends: ../base.yaml
+mode: research
+experiment: rq3_sc_type
+datasets: [wildchat, hermes_agent, openresearcher]
+group_by: [category]
+compactors: [gpt_oss_120b__anthropic, gpt_oss_120b__pi_mono, qwen3_30b_a3b__anthropic]

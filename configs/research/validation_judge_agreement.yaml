@@ -1,0 +1,9 @@
+# Validation: judge agreement study (spec FR-050, Table 8, TASK-041).
+# The human sample is BALANCED (25 retained, 25 not) and that must be reported with kappa.
+extends: ../base.yaml
+mode: research
+experiment: validation_judge_agreement
+human_annotations: data/human_annotations/judge_validation_50.jsonl
+secondary_judge: gemini-3.5-flash
+report:
+  table: table8

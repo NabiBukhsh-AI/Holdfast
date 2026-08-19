@@ -1,0 +1,9 @@
+# Robustness: free generation compliance harness (spec FR-047, FR-048, Table 9, TASK-040).
+extends: ../base.yaml
+mode: research
+experiment: robustness_free_generation
+datasets: [wildchat, hermes_agent, openresearcher]
+sc_subset: [1, 2, 3, 6, 7, 10]
+compactors: [gpt_oss_120b__anthropic]
+report:
+  table: table9

@@ -1,0 +1,38 @@
+# SC-GUARD production service configuration.
+# Rollout order (spec 32.2): dark, shadow, canary 1 percent, 10, 50, 100.
+# shadow_mode starts TRUE. Flipping it to false is a rollout decision, not a deploy detail.
+extends: ../base.yaml
+mode: production
+catalog:
+  allow_other_category: true
+registry:
+  mode: production
+  budget_tokens: 200
+  tau_dup: null                 # MUST be set from the tuning sweep before enabling injection
+  conflict_detection: true
+  tombstoning: true
+assembly:
+  mode: delimited
+extractor:
+  guided_json: true
+  backend: openai_compatible
+judge:
+  backend: openai_compatible
+service:
+  host: 0.0.0.0
+  port: 8080
+  drain_timeout_ms: 200
+  queue_max_depth: 50000
+  rate_limit_per_session_rps: 100
+  rate_limit_per_tenant_rps: 10000
+  max_content_bytes: 65536
+  session_ttl_days: 30
+  shadow_mode: true
+database:
+  dsn_env: HOLDFAST_PG_DSN
+  backend: postgres
+redis:
+  dsn_env: HOLDFAST_REDIS_DSN
+  backend: redis
+online_eval:
+  sample_rate: 0.01

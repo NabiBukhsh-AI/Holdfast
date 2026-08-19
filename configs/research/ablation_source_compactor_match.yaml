@@ -1,0 +1,7 @@
+# Ablation: source and compactor matching study (spec 15.8, TASK-039).
+# Acceptance: matched gpt-oss at 8.4 percent confirms mismatch is not the explanation.
+extends: ../base.yaml
+mode: research
+experiment: ablation_source_compactor_match
+datasets: [hermes_agent]
+compactors: [gpt_oss_120b__anthropic]

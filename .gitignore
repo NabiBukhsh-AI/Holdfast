@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+artifacts/
+runs/
+data/corpora/
+data/contexts/
+# Fetched prompts are deliberately NOT committed: they are third party text pulled by
+# scripts/fetch_prompts.py, and committing them here would blur the line between what the
+# paper supplied and what this repository asserts (execution contract rule 4).
+prompts/compaction/anthropic.v1.yaml
+prompts/compaction/pi_mono.v1.yaml
+prompts/compaction/anthropic_sc_targeted.v1.yaml
+prompts/extraction/sc_extractor.v1.yaml
+.env

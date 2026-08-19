@@ -1,0 +1,134 @@
+# HoldFast base configuration.
+#
+# Every UNKNOWN from spec section 30.2 appears here explicitly with its id.
+# Values marked null have NO safe default: the loader raises UnresolvedUnknownError
+# rather than inventing one (execution contract rule 3).
+# Every value in the unknowns block is copied into the run manifest verbatim.
+
+mode: research            # research | production
+
+paths:
+  catalog: data/sc_catalog/v1.yaml
+  taxonomy: data/taxonomy/v1.yaml
+  prompts_dir: prompts
+  artifacts_dir: artifacts
+
+random:
+  # U-04: the paper states no seeds. Reproduction cannot be bit identical.
+  # Run three seeds and report the spread (spec 15.3, E-03).
+  seed: 20260731
+
+tokenization:
+  # U-07: the paper does not state which tokenizer defines "100K tokens".
+  # Held fixed across a comparison set or cross-compactor comparisons are confounded.
+  tokenizer_id: cl100k_base
+  backend: heuristic        # heuristic | tiktoken | huggingface
+  # The heuristic backend exists so CI and unit tests need no model download.
+  heuristic_chars_per_token: 4.0
+
+catalog:
+  version: v1
+  # Research mode forbids the other category; production allows it (FR-042).
+  allow_other_category: false
+
+framing:
+  template_version: v1
+  # PAPER SPECIFICATION spec 6.7: default for all main experiments.
+  default_strength: preferential
+  default_explicitness: direct
+
+injection:
+  # PAPER SPECIFICATION FR-024: Top, once.
+  default_condition: top
+  # U-08 / A-02: append with a single space. Direction and separator are not stated.
+  separator: " "
+  direction: append         # append | prepend
+  # U-09: target repetition count r for the Multi condition in the main grid.
+  # NOT stated by the paper. No default. Must be set by the experiment config.
+  repetition_r: null
+  repetition_sweep: [1, 5, 10, 15, 20, 25, 30]
+
+compaction:
+  # U-10 / A-01: INFERENCE from the paper's approximately-80-percent framing.
+  alpha_l: 0.8
+  l_max: 128000
+  # U-17: max output tokens for compactors. Set above 1024 and verify no truncation.
+  max_output_tokens: 2048
+  # U-05: default hyperparameter is not defined by the paper.
+  temperature: 0.0
+  top_p: 1.0
+  recent_n: 5              # PAPER SPECIFICATION FR-031
+  llmlingua_target_tokens: 500   # PAPER SPECIFICATION FR-032, fixed budget mode
+
+context:
+  target_tokens: 100000    # PAPER SPECIFICATION FR-011
+  n_contexts: 50           # PAPER SPECIFICATION FR-011
+  knn_k: 32                # PAPER SPECIFICATION FR-012
+  soft_cap_multiplier: 1.25
+  embedding_model: "Qwen/Qwen3-Embedding-0.6B"
+  embedding_backend: stub  # stub | huggingface. stub is deterministic, for CI.
+  embedding_revision: null # U-13: pin the revision before any reported run.
+  # U-06: conversation to string serialization for embedding. Changes every context.
+  serialization: role_prefixed_newline
+  # U-14: cropping granularity on overshoot.
+  crop_granularity: message   # message | token
+  dev_contexts: 10         # ENGINEERING RECOMMENDATION spec 12.2 stage 8
+  eval_contexts: 50
+
+judge:
+  model: gpt-5.4
+  # U-12: judge temperature not stated.
+  temperature: 0.0
+  timeout_s: 120.0
+  backend: stub            # stub | openai_compatible
+  # ENGINEERING RECOMMENDATION spec 14.9: record strict and normalized verdicts.
+  record_normalized_verdict: true
+
+probe:
+  model: gpt-oss-120b
+  temperature: 0.0
+  timeout_s: 120.0
+  backend: stub
+  # U-11: fixed matches the paper's Table 12 layout; randomized removes position bias.
+  option_order: fixed      # fixed | randomized
+  record_mapping: true
+
+extractor:
+  model: qwen3.5-9b
+  thinking: false          # PAPER SPECIFICATION FR-068
+  guided_json: false       # research mode runs unconstrained; production uses guided
+  temperature: 0.0
+  timeout_s: 30.0
+  backend: stub
+  max_retries: 2
+
+registry:
+  mode: paper_flat_list    # paper_flat_list | production
+  # ENGINEERING RECOMMENDATION spec 14.7 / A-09. Zero or unset fails at startup.
+  budget_tokens: 200
+  # tau_dup must be tuned on a labelled pair set, never hardcoded (spec 14.6).
+  tau_dup: null
+  conflict_detection: false
+  tombstoning: false
+
+assembly:
+  # PAPER SPECIFICATION Eq 10 is bare concatenation; delimited is the production default.
+  mode: bare               # bare | delimited
+
+evaluation:
+  min_er_denominator: 0.05   # ENGINEERING RECOMMENDATION spec 6.12
+  wilson_confidence: 0.95
+  er_tolerance_pp: 0.15
+
+cost:
+  # Execution contract rule 15. No expensive path runs without a gate.
+  ceiling_usd: 50.0
+  require_confirm: true
+  price_per_1k_input_usd: {}
+  price_per_1k_output_usd: {}
+
+llm:
+  base_url: null
+  api_key_env: HOLDFAST_API_KEY
+  max_concurrency: 8
+  connect_timeout_s: 10.0

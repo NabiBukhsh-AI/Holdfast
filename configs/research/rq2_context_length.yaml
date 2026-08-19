@@ -1,0 +1,8 @@
+# RQ2: context length sweep (spec 15.7, Figure 4, TASK-031).
+extends: ../base.yaml
+mode: research
+experiment: rq2_context_length
+datasets: [wildchat, hermes_agent, openresearcher]
+sweep:
+  target_tokens: [10000, 50000, 100000]
+compactors: [gpt_oss_120b__anthropic, gpt_oss_120b__pi_mono, qwen3_30b_a3b__anthropic]

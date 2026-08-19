@@ -1,0 +1,56 @@
+# PAPER SPECIFICATION: Table 13, reproduced in engineering spec section 3.4.
+# The taxonomy is organized by WHAT the constraint binds.
+# Immutable per version. Any edit produces a new version file.
+version: v1
+source: "Lost in Compaction, Table 13 (via COMPINT_ENGINEERING_SPEC section 3.4)"
+categories:
+  - id: action
+    name: Action
+    binds: "What the agent does"
+    severity_rank: 1
+    definition: >-
+      Constrains what the agent may do, including text outputs that describe or commit to
+      actions and tool calls that produce external side effects.
+  - id: information
+    name: Information
+    binds: "What the agent emits"
+    severity_rank: 2
+    definition: >-
+      Constrains what information the agent may include in its outputs or pass to tools,
+      including content it should withhold, paraphrase rather than quote, or avoid
+      propagating across turns.
+  - id: process
+    name: Process
+    binds: "How it reaches an answer or action"
+    severity_rank: 3
+    definition: >-
+      Constrains how the agent reaches an answer or completes a task, including required
+      reasoning steps, verification actions, or evidence gathering before responding.
+  - id: preference
+    name: Preference
+    binds: "Which of several task-equivalent answers it picks"
+    severity_rank: 4
+    definition: >-
+      Specifies a choice rule among task-equivalent alternatives. When the agent has genuine
+      optionality between valid solutions, the constraint dictates which one to pick.
+  - id: output
+    name: Output
+    binds: "Textual properties of the response"
+    severity_rank: 5
+    definition: >-
+      Constrains verifiable surface properties of the response, including format, structure,
+      length, required elements, forbidden tokens, tone, or audience framing.
+  # ENGINEERING RECOMMENDATION: spec 3.4 and FR-042. Production mode only.
+  # The research catalog never uses this category; a load-time assertion forbids it there.
+  - id: other
+    name: Other
+    binds: "Unclassified"
+    severity_rank: 6
+    production_only: true
+    definition: >-
+      Fallback for production extraction when a real user constraint does not partition
+      cleanly into the five research categories. A rising other rate signals that the
+      taxonomy needs revision.
+# ENGINEERING RECOMMENDATION: spec 14.7 and assumption A-10.
+# Budget eviction priority. Action and Information govern side effects and disclosure.
+severity_order: [action, information, process, preference, output, other]

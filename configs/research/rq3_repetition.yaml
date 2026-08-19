@@ -1,0 +1,10 @@
+# RQ3: repetition sweep (spec 15.8, FR-025, Figure 7, TASK-035).
+extends: ../base.yaml
+mode: research
+experiment: rq3_repetition
+datasets: [wildchat, hermes_agent]
+injection:
+  default_condition: multi
+  repetition_r: 5
+  repetition_sweep: [1, 5, 10, 15, 20, 25, 30]
+compactors: [gpt_oss_120b__anthropic]

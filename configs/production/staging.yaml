@@ -1,0 +1,36 @@
+# SC-GUARD staging service configuration.
+extends: ../base.yaml
+mode: production
+catalog:
+  allow_other_category: true
+registry:
+  mode: production
+  budget_tokens: 200
+  tau_dup: 0.88                 # UNRESOLVED: replace with the swept value plus its ROC
+  conflict_detection: true
+  tombstoning: true
+assembly:
+  mode: delimited
+extractor:
+  guided_json: true
+  backend: openai_compatible
+judge:
+  backend: openai_compatible
+service:
+  host: 0.0.0.0
+  port: 8080
+  drain_timeout_ms: 200
+  queue_max_depth: 10000
+  rate_limit_per_session_rps: 100
+  rate_limit_per_tenant_rps: 10000
+  max_content_bytes: 65536
+  session_ttl_days: 30
+  shadow_mode: true             # staging runs shadow mode by default (FR-086)
+database:
+  dsn_env: HOLDFAST_PG_DSN
+  backend: postgres
+redis:
+  dsn_env: HOLDFAST_REDIS_DSN
+  backend: redis
+online_eval:
+  sample_rate: 0.01

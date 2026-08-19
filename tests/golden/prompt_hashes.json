@@ -1,0 +1,15 @@
+{
+  "_comment": "Prompt content hashes. Spec 11.4: a one character prompt change silently invalidates cross run comparisons, so changing a hash must be deliberate.",
+  "hashes": {
+    "anthropic_sc_targeted_addendum": "sha256:ba7161c97ed7aa696f21905634eef6a90fa4ea63104fbac60f6e7bd82fca5fea",
+    "free_generation_judge": "sha256:ad6e256e509d595d3fe489979d721f7ddf8f7e7675a2ff3bd359cca960d69f4a",
+    "mcq_probe": "sha256:6cefa9b40cfd71417f8fe617f6d3274e1359cc12920cd694afde06c955833f6f",
+    "retention_judge": "sha256:beb473a7ddc83eda063b32db428a088d06f09f5432747d787a4f3ca97020e0b2"
+  },
+  "unfetched_required_prompts": [
+    "anthropic",
+    "pi_mono",
+    "anthropic_sc_targeted",
+    "sc_extractor"
+  ]
+}

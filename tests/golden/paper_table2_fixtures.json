@@ -1,0 +1,87 @@
+{
+  "_comment": [
+    "PAPER SPECIFICATION Table 2, via engineering spec Algorithm 14.11.",
+    "These fixtures validate the Effect Retention implementation against the paper's own",
+    "arithmetic BEFORE any model is invoked. Spec rule 18 calls this the cheapest",
+    "correctness gate available, and spec 32.4 makes a failure here an escalation trigger",
+    "rather than a bug to grind through: either the paper's arithmetic or ours is wrong.",
+    "Tolerance is 0.15 percentage points, not exact equality, because the pi-mono Hermes",
+    "cell computes to 27.9 against a printed 27.8 (spec 6.12 rounding note)."
+  ],
+  "tolerance_pp": 0.15,
+  "source": "arXiv:2608.11242v1 Table 2 (via COMPINT_ENGINEERING_SPEC section 6.12 and 14.11)",
+  "cases": [
+    {
+      "id": "hermes_gpt_oss_120b_anthropic",
+      "dataset": "hermes_agent",
+      "compactor_id": "gpt_oss_120b__anthropic",
+      "c_comp": 0.585,
+      "c_lctx": 0.461,
+      "c_ub": 0.983,
+      "expected_er_percent": 23.8,
+      "expected_status": "OK",
+      "note": "worked check reproduced verbatim in spec 6.12"
+    },
+    {
+      "id": "hermes_llmlingua2_t500",
+      "dataset": "hermes_agent",
+      "compactor_id": "llmlingua2_t500",
+      "c_comp": 0.501,
+      "c_lctx": 0.461,
+      "c_ub": 0.997,
+      "expected_er_percent": 7.5,
+      "expected_status": "OK",
+      "note": "worked check reproduced verbatim in spec 6.12"
+    },
+    {
+      "id": "wildchat_gpt_oss_120b_pi_mono",
+      "dataset": "wildchat",
+      "compactor_id": "gpt_oss_120b__pi_mono",
+      "c_comp": 0.512,
+      "c_lctx": 0.512,
+      "c_ub": 0.951,
+      "expected_er_percent": 0.0,
+      "expected_status": "OK",
+      "note": "numerator is exactly zero; ER 0.0 percent is a real result, not a failure"
+    },
+    {
+      "id": "hermes_gpt_oss_120b_pi_mono",
+      "dataset": "hermes_agent",
+      "compactor_id": "gpt_oss_120b__pi_mono",
+      "c_comp": 0.607,
+      "c_lctx": 0.461,
+      "c_ub": 0.984,
+      "expected_er_percent": 27.9,
+      "expected_status": "OK",
+      "note": "spec 6.12 internal inconsistency: computes to 27.9, Table 2 prints 27.8. This case is why the tolerance exists."
+    }
+  ],
+  "hazard_cases": [
+    {
+      "id": "degenerate_denominator",
+      "c_comp": 0.55,
+      "c_lctx": 0.52,
+      "c_ub": 0.54,
+      "expected_status": "DEGENERATE_DENOMINATOR",
+      "note": "c_ub within MIN_ER_DENOMINATOR of c_lctx. ER is undefined, never a large number."
+    },
+    {
+      "id": "negative_effect_retention",
+      "c_comp": 0.40,
+      "c_lctx": 0.50,
+      "c_ub": 0.95,
+      "expected_er_percent": -22.2,
+      "expected_status": "NEGATIVE",
+      "note": "compaction produced worse compliance than no constraint at all. Real signal, never clipped."
+    },
+    {
+      "id": "above_upper_bound",
+      "c_comp": 0.99,
+      "c_lctx": 0.50,
+      "c_ub": 0.95,
+      "expected_er_percent": 108.9,
+      "expected_status": "ABOVE_UPPER_BOUND",
+      "note": "anomalous, flagged for investigation, never silently truncated to 100 percent."
+    }
+  ]
+}

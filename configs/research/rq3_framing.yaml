@@ -1,0 +1,12 @@
+# RQ3: full 2x2 framing grid (spec 15.8, Table 3, TASK-036).
+# The full 2x2 is computed and stored; Table 3 marginals are derived from it (spec 6.7).
+extends: ../base.yaml
+mode: research
+experiment: rq3_framing
+datasets: [wildchat, hermes_agent, openresearcher]
+sweep:
+  strength: [preferential, strict]
+  explicitness: [contextualized, direct]
+compactors: [gpt_oss_120b__anthropic]
+report:
+  table: table3

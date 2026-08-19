@@ -1,0 +1,25 @@
+# RQ1: to what extent do current compaction methods preserve SCs? (spec 15.6)
+# Grid: 50 contexts x 15 SCs = 750 per compaction condition per dataset.
+extends: ../base.yaml
+mode: research
+experiment: rq1_baseline
+datasets: [wildchat, hermes_agent, openresearcher]
+context:
+  target_tokens: 100000
+  n_contexts: 50
+framing:
+  default_strength: preferential
+  default_explicitness: direct
+injection:
+  default_condition: top
+  repetition_r: null      # Multi is not used in RQ1; stays unresolved on purpose.
+compactors:
+  - recent_5
+  - llmlingua2_t500
+  - gpt_oss_120b__anthropic
+  - gpt_oss_120b__pi_mono
+  - qwen3_30b_a3b__anthropic
+  - gemma_4_e4b__anthropic
+conditions: [lctx, lctx_sc, comp, ub]
+report:
+  table: table2

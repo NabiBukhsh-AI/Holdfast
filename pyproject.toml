@@ -1,0 +1,94 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "holdfast"
+version = "0.1.0"
+description = "HoldFast: COMPINT benchmark and SC-GUARD service for Session Constraint integrity under LLM context compaction"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "HoldFast engineering" }]
+
+dependencies = [
+  "pydantic>=2.7",
+  "pydantic-settings>=2.2",
+  "pyyaml>=6.0",
+  "typer>=0.12",
+  "httpx>=0.27",
+  "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+service = [
+  "fastapi>=0.111",
+  "uvicorn>=0.30",
+  "asyncpg>=0.29",
+  "redis>=5.0",
+  "opentelemetry-api>=1.25",
+  "opentelemetry-sdk>=1.25",
+  "prometheus-client>=0.20",
+]
+research = [
+  "polars>=1.0",
+  "pyarrow>=16.0",
+  "datasets>=2.19",
+  "faiss-cpu>=1.8",
+  "scikit-learn>=1.5",
+  "llmlingua>=0.2",
+  "matplotlib>=3.8",
+]
+dev = [
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "pytest-cov>=5.0",
+  "mypy>=1.10",
+  "ruff>=0.4",
+  "hypothesis>=6.100",
+]
+
+[project.scripts]
+compint = "compint.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/compint", "src/scguard", "src/shared"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["src"]
+markers = [
+  "gpu: requires a GPU and real model weights, excluded from CI",
+  "paid: issues billable API calls, excluded from CI",
+  "slow: long running",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+packages = ["compint", "scguard", "shared"]
+warn_unreachable = true
+disallow_any_unimported = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["faiss.*", "llmlingua.*", "datasets.*", "polars.*", "sklearn.*", "matplotlib.*", "redis.*", "asyncpg.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "ARG", "PTH", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ARG001", "ARG002"]
+
+[tool.coverage.report]
+fail_under = 90
+include = ["src/compint/core/*", "src/compint/eval/metrics.py", "src/shared/*", "src/scguard/registry/*"]

@@ -1,0 +1,21 @@
+# Pinned revisions. UNKNOWN U-13: upstream dataset and model revisions are not stated by the
+# paper. Every null here MUST be filled before a reported run and recorded in the manifest.
+version: 1
+python: "3.11"
+models:
+  compactor_gpt_oss_120b: { id: "openai/gpt-oss-120b", revision: null, dtype: bfloat16 }
+  compactor_qwen3_30b_a3b: { id: "Qwen/Qwen3-30B-A3B", revision: null, dtype: bfloat16 }
+  compactor_gemma_4_e4b: { id: "google/gemma-4-e4b", revision: null, dtype: bfloat16 }
+  compactor_gpt_5_4_mini: { id: "gpt-5.4-mini", revision: null, hosted: true }
+  extractor: { id: "Qwen/Qwen3.5-9B", revision: null, dtype: bfloat16, thinking: false }
+  embedding: { id: "Qwen/Qwen3-Embedding-0.6B", revision: null, dtype: float32 }
+  judge: { id: "gpt-5.4", revision: null, hosted: true }
+  probe: { id: "openai/gpt-oss-120b", revision: null, dtype: bfloat16 }
+serving:
+  vllm_version: null
+  llmlingua_version: null
+  faiss_version: null
+datasets:
+  wildchat: { id: "allenai/WildChat-1M", revision: null }
+  hermes_agent: { id: "NousResearch/hermes-agent", revision: null }
+  openresearcher: { id: "openresearcher/trajectories", revision: null }
