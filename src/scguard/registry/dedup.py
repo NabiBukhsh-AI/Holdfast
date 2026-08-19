@@ -93,6 +93,11 @@ class RegistryUpdater:
         self._prompt_hash = prompt_hash
 
     @property
+    def store(self) -> RegistryStore:
+        """The backing store, so callers can read the active registry without reaching in."""
+        return self._store
+
+    @property
     def conflict_detection_enabled(self) -> bool:
         """Tiers 3 and 4 are production only. paper_flat_list reproduces the source exactly."""
         return self._mode != "paper_flat_list" and self._adjudicator is not None
