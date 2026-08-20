@@ -59,7 +59,10 @@ def tiktoken_module() -> types.ModuleType:
 
 class FakeAutoTokenizer:
     @staticmethod
-    def from_pretrained(model_id: str, revision: str | None = None) -> FakeAutoTokenizer:
+    def from_pretrained(
+        model_id: str,  # noqa: ARG004 - mirrors the real signature the wrapper calls
+        revision: str | None = None,  # noqa: ARG004 - see above
+    ) -> FakeAutoTokenizer:
         return FakeAutoTokenizer()
 
     def encode(self, text: str, add_special_tokens: bool = False) -> list[int]:
