@@ -293,6 +293,39 @@ class ComplianceHarness:
             response.raw or response.text,
         )
 
+    def failure_record(
+        self,
+        condition: ComplianceCondition,
+        framed_sc: FramedSC,
+        *,
+        instance_id: str,
+        status: ProbeStatus,
+        detail: str,
+    ) -> ProbeRecord:
+        """Build a probe record for a condition that could not be probed at all.
+
+        Public because the grid runner needs it too: a cell whose compaction failed still has
+        to produce a record carrying the reason, or the instance would silently vanish from the
+        denominator instead of being counted as an exclusion (INV-6).
+        """
+        if status is ProbeStatus.OK:
+            raise ValueError("failure_record requires a non OK status")
+        return self._record(
+            condition,
+            framed_sc,
+            render_mcq(self._prompt, framed_sc, option_order=self._choose_option_order(framed_sc)),
+            instance_id,
+            None,
+            status,
+            0,
+            detail,
+        )
+
+    @staticmethod
+    def probe_status_for(compaction_status: CompactionStatus) -> ProbeStatus:
+        """Map a compaction failure onto the probe status that records why nothing was probed."""
+        return _status_for(compaction_status)
+
     def _record(
         self,
         condition: ComplianceCondition,

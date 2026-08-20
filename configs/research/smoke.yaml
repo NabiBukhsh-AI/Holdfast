@@ -1,0 +1,25 @@
+# Smoke configuration: the smallest run that exercises the whole pipeline.
+#
+# Recent-5 only, so NO fetched prompt is required and the blocking gate does not apply. Every
+# model backend is a stub, so this spends nothing and needs no GPU. It exists so the
+# orchestration (contexts, grid, checkpointing, aggregation, verdict) can be exercised before
+# any of the expensive paths are unlocked.
+#
+# It is NOT a reproduction. Recent-5 is one compactor of eight, the contexts are small, and
+# stub verdicts are not measurements. verify_reproduction will report NO_REFERENCE for cells
+# it cannot grade.
+extends: ../base.yaml
+mode: research
+experiment: smoke
+datasets: [wildchat]
+compactors: [recent_5]
+conditions: [comp]
+context:
+  target_tokens: 800
+  n_contexts: 6
+  eval_contexts: 6
+  dev_contexts: 3
+cost:
+  # Safe to disable here precisely because every backend is a stub.
+  require_confirm: false
+  ceiling_usd: 1.0

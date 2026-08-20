@@ -35,6 +35,18 @@ from shared.config import load_config  # noqa: E402
 from shared.errors import ConfigError  # noqa: E402
 
 
+def display_path(path: Path) -> str:
+    """Repo relative when possible, absolute otherwise.
+
+    --out-dir may legitimately point outside the repository, and a path helper is not a
+    reason for the whole build to crash after the contexts were already written.
+    """
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def load_rows(dataset: str, source_dir: Path) -> list[dict[str, object]]:
     """Read normalized JSONL for one corpus.
 
@@ -151,7 +163,7 @@ def main() -> int:
                     encoding="utf-8",
                     newline="\n",
                 )
-                print(f"    wrote {len(contexts)} contexts to {out.relative_to(ROOT)}")
+                print(f"    wrote {len(contexts)} contexts to {display_path(out)}")
 
     if failures:
         print("\nCONTEXT CONSTRUCTION FAILED:", file=sys.stderr)
