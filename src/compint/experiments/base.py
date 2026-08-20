@@ -129,15 +129,38 @@ def estimate_cost(
     conditions: Sequence[str] = ("lctx", "lctx_sc", "comp", "ub"),
     mean_context_tokens: int | None = None,
 ) -> CostEstimate:
-    """Project the call counts and spend for a grid, accounting for the condition caching.
+    """Project the call counts and spend for a built grid."""
+    return estimate_cost_from_counts(
+        config,
+        n_instances=len(cells),
+        n_contexts=n_contexts,
+        n_scs=len({cell.sc_id for cell in cells}) or 1,
+        n_compactors=len({cell.compactor_id for cell in cells}) or 1,
+        conditions=conditions,
+        mean_context_tokens=mean_context_tokens,
+    )
 
-    The caching is not a rounding detail: K_lctx and C(H^t) are computed once per context
-    rather than once per (context, SC), which removes 14 of every 15 calls in those two arms.
-    An estimate that ignored it would overstate cost by roughly the SC count.
+
+def estimate_cost_from_counts(
+    config: AppConfig,
+    *,
+    n_instances: int,
+    n_contexts: int,
+    n_scs: int,
+    n_compactors: int,
+    conditions: Sequence[str] = ("lctx", "lctx_sc", "comp", "ub"),
+    mean_context_tokens: int | None = None,
+) -> CostEstimate:
+    """Project call counts and spend from grid dimensions alone.
+
+    Exists so a pre flight estimate can be produced BEFORE contexts are built, which is the
+    order the cost gate is actually useful in: nobody wants to spend an embedding pass to find
+    out the run is over budget.
+
+    The condition caching is not a rounding detail: K_lctx and C(H^t) are computed once per
+    context rather than once per (context, SC), which removes 14 of every 15 calls in those two
+    arms. An estimate that ignored it would overstate cost by roughly the SC count.
     """
-    n_instances = len(cells)
-    n_scs = len({cell.sc_id for cell in cells}) or 1
-    n_compactors = len({cell.compactor_id for cell in cells}) or 1
     context_tokens = mean_context_tokens or config.context.target_tokens
 
     # One compaction per instance for K_comp, plus one un-injected compaction per

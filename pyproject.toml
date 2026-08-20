@@ -97,9 +97,10 @@ ignore = ["E501"]
 [tool.ruff.lint.per-file-ignores]
 # Stub response factories take the request and ignore it; that is the point of a stub.
 "tests/**" = ["ARG001", "ARG002", "ARG005"]
-# FastAPI declares query parameter metadata via calls in argument defaults. This is the
-# framework idiom, not the mutable-default hazard B008 is aimed at.
+# FastAPI and Typer both declare parameter metadata via calls in argument defaults. This is
+# the framework idiom, not the mutable-default hazard B008 is aimed at.
 "src/scguard/api/routes/*.py" = ["B008"]
+"src/compint/cli.py" = ["B008"]
 
 [tool.coverage.report]
 fail_under = 90

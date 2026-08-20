@@ -177,7 +177,11 @@ def retention_rate(records: Sequence[RetentionRecord], confidence: float = 0.95)
             f"statuses={dict(Counter(r.status.value for r in records))}"
         )
     n_correct = sum(1 for r in valid if r.verdict == "YES")
-    excluded = [r for r in records if r not in valid]
+    # Partition by the SAME predicate rather than by membership in `valid`. A `not in` test
+    # over pydantic models is a linear scan with a structural equality check per element, so
+    # the obvious version is quadratic and gets slow exactly where it matters: the full sweep
+    # aggregates tens of millions of rows.
+    excluded = [r for r in records if r.status is not RetentionStatus.OK or r.verdict is None]
     reasons = Counter(r.status.value for r in excluded)
     return RetentionResult(
         n_correct=n_correct,
