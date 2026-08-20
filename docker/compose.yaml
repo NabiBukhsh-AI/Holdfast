@@ -1,0 +1,57 @@
+# Local Postgres and Redis for SC-GUARD. Spec 17.3.
+#
+#   docker compose -f docker/compose.yaml up -d
+#   export HOLDFAST_PG_DSN=postgresql://holdfast:holdfast@localhost:5432/holdfast
+#   export HOLDFAST_REDIS_DSN=redis://localhost:6379/0
+#
+# To run the registry contract suite against a real database:
+#
+#   HOLDFAST_TEST_PG_DSN=$HOLDFAST_PG_DSN pytest tests/contract -q
+#
+# These credentials are for local development only. Production reads its DSNs from the
+# environment (see database.dsn_env and redis.dsn_env), never from a file in the repository.
+
+name: holdfast
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: holdfast
+      POSTGRES_PASSWORD: holdfast
+      POSTGRES_DB: holdfast
+      # Deterministic collation, so ORDER BY does not vary with the host locale.
+      POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Applied in filename order on first start of an empty data directory.
+      - ../migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U holdfast -d holdfast"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    # The registry cache is a CACHE: every entry is reconstructible from Postgres, and the
+    # version check on read means a lost entry costs a query rather than a wrong answer. So
+    # persistence is deliberately off and eviction is allowed under memory pressure.
+    command: >
+      redis-server
+      --save ""
+      --appendonly no
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres_data:

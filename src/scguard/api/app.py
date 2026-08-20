@@ -35,7 +35,7 @@ from scguard.registry.store import (
     SessionNotFoundError,
 )
 from shared.config import AppConfig
-from shared.errors import BudgetNotConfiguredError
+from shared.errors import BudgetNotConfiguredError, ConfigError
 from shared.llm_client import LLMClient, StubLLMClient
 from shared.prompts import Prompt
 
@@ -78,12 +78,18 @@ def build_context(
     llm_client: LLMClient | None = None,
     extraction_prompt: Prompt | None = None,
     adjudicator: Adjudicator | None = None,
+    store: RegistryStore | None = None,
 ) -> ServiceContext:
-    """Wire the service. Defaults are the in-memory, no-network backends used by dev and CI."""
+    """Wire the service. Defaults are the in-memory, no-network backends used by dev and CI.
+
+    A caller that has already connected a Postgres store and a Redis cache passes the wrapped
+    store in; `build_context_async` does exactly that. Keeping this function synchronous means
+    the dev and CI path stays a single call with no event loop required.
+    """
     # Fails at startup rather than at the first compaction (spec 14.7).
     budget = config.registry.require_budget_tokens()
 
-    store = InMemoryRegistryStore()
+    store = store if store is not None else InMemoryRegistryStore()
     audit = AuditEmitter()
     queue = ExtractionQueue(capacity=config.service.queue_max_depth)
     client = llm_client or StubLLMClient(default_factory=lambda _request: "[]")
@@ -128,6 +134,61 @@ def build_context(
         updater=updater,
         worker=worker,
         assembly=assembly,
+    )
+
+
+async def build_context_async(
+    config: AppConfig,
+    *,
+    llm_client: LLMClient | None = None,
+    extraction_prompt: Prompt | None = None,
+    adjudicator: Adjudicator | None = None,
+) -> ServiceContext:
+    """Connect the configured backends, then wire the service.
+
+    Backend selection is config, never inference. `memory` is the dev and CI path and needs no
+    services running; `postgres` and `redis` are the deployable path. A configured backend with
+    a missing DSN fails at startup rather than at the first request, because a service that
+    accepts traffic and then cannot persist a constraint is worse than one that refuses to
+    start.
+    """
+    import os
+
+    from scguard.registry.cache import CachedRegistryStore, build_cache
+
+    store: RegistryStore
+    if config.database.backend == "postgres":
+        from scguard.registry.postgres_store import PostgresRegistryStore
+
+        dsn = os.environ.get(config.database.dsn_env)
+        if not dsn:
+            raise ConfigError(
+                f"database.backend is postgres but {config.database.dsn_env} is unset. "
+                "Set it, or use backend=memory for dev and CI."
+            )
+        store = await PostgresRegistryStore.connect(dsn)
+    else:
+        store = InMemoryRegistryStore()
+
+    if config.redis.backend == "redis":
+        redis_dsn = os.environ.get(config.redis.dsn_env)
+        if not redis_dsn:
+            raise ConfigError(
+                f"redis.backend is redis but {config.redis.dsn_env} is unset. "
+                "Set it, or use backend=memory for dev and CI."
+            )
+        store = CachedRegistryStore(store, build_cache("redis", redis_dsn))
+    elif config.redis.backend == "memory" and config.database.backend == "postgres":
+        # A process local cache in front of a shared database is still correct, because every
+        # mutation goes through this process and invalidates it. It is simply not shared.
+        store = CachedRegistryStore(store, build_cache("memory"))
+
+    return build_context(
+        config,
+        llm_client=llm_client,
+        extraction_prompt=extraction_prompt,
+        adjudicator=adjudicator,
+        store=store,
     )
 
 
