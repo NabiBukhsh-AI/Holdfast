@@ -37,17 +37,24 @@ free. The registry is never compressed, because the compactor cannot see it.
 
 ## Status
 
-This repository implements the engineering contract for the above. Current state:
+364 tests, `mypy --strict` clean, `ruff` clean. The whole suite runs on CPU with no network
+and no spend.
 
 | Area | Status |
 | --- | --- |
 | Core domain models, taxonomy, catalog, framing, injection | Implemented and tested |
-| Metrics (Equations 6, 8, 9, Wilson intervals, Cohen kappa) | Implemented and tested against the paper's own arithmetic |
+| Metrics (Equations 6, 8, 9, Wilson intervals, Cohen kappa) | Implemented, checked against the source's own arithmetic |
 | Shared assembly (Equation 10, INV-5, INV-7) | Implemented and tested |
-| Compactor abstraction, Recent-N, LLMLingua-2, LLM summarizer | Implemented |
-| Corpus ingestion adapters | Implemented |
-| Prompt registry and the TASK-001 fetch gate | Implemented, gate CLOSED (see below) |
-| Context builder, extractor, experiment runner, SC-GUARD service | In progress |
+| Compactors: protocol, Recent-N, LLMLingua-2, LLM summarizer | Implemented |
+| Data pipeline: ingestion, embedding, exact kNN, splits, stitching, truncation | Implemented and tested |
+| Evaluation: retention judge, four compliance conditions, condition caching | Implemented and tested |
+| SC extractor: three-input prompt builder, strict parser, research registry | Implemented and tested |
+| Experiment runner: grid, manifest, cost gate, resumable checkpoints | Implemented and tested |
+| Reporting: Table 2 equivalent and the reproduction verdict | Implemented and tested |
+| SC-GUARD: append-only store, budget, audit, dedup, conflicts | Implemented and tested |
+| SC-GUARD: queue, workers, assembly service, full API | Implemented and tested |
+| Observability: metrics, alerts, runbooks | Implemented and tested |
+| Reproduction runs against real models | Blocked on the fetch gate below |
 
 ### The fetch gate is closed, deliberately
 
@@ -88,7 +95,9 @@ src/compint/      OFFLINE: the benchmark. May import shared. May NOT import scgu
 src/scguard/      ONLINE: the service.   May import shared. May NOT import compint.
 src/shared/       code that MUST be identical between the two arms; assemble() lives here
 tests/            unit, integration, e2e, golden, property, security, load
-scripts/          fetch_prompts, build_contexts, run_experiment, verify_reproduction, estimate_cost
+scripts/          fetch_prompts, build_contexts, verify_reproduction, estimate_cost, build_fixtures
+migrations/       the scguard schema, with append-only enforced by trigger
+docs/runbooks/    one runbook per paging alert
 ```
 
 The import direction rule is enforced in CI. `src/shared/` exists so that INV-5 (the evaluated
