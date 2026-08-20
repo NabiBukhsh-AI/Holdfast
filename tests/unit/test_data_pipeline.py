@@ -393,10 +393,9 @@ def test_wildchat_keeps_zero_system_messages(
 
 def test_stitching_raises_when_pool_cannot_fill_n_contexts(
     tokenizer: Tokenizer,
+    make_conversation,
 ) -> None:
-    from tests.conftest import build_conversation
-
-    tiny = [build_conversation("wildchat", i, n_user_turns=1, words=5) for i in range(2)]
+    tiny = [make_conversation("wildchat", i, n_user_turns=1, words=5) for i in range(2)]
     with pytest.raises(InsufficientDataError):
         _stitch(tiny, "wildchat", tokenizer, target_tokens=50_000, n_contexts=5)
 

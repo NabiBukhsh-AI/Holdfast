@@ -232,3 +232,15 @@ def openresearcher_corpus() -> list[Conversation]:
         )
         for i in range(20)
     ]
+
+
+@pytest.fixture
+def make_conversation():  # type: ignore[no-untyped-def]
+    """Factory for synthetic source conversations.
+
+    Exposed as a fixture rather than imported from conftest directly: `tests` is not an
+    installed package, so `from tests.conftest import ...` resolves only when the repository
+    root happens to be on sys.path. That is true locally and false on a clean CI runner, which
+    is exactly the kind of difference that should not decide whether a test passes.
+    """
+    return build_conversation
