@@ -94,9 +94,7 @@ def test_injection_targets_user_turn_index_space(
     framed = frame(catalog.by_id(2))
     injected = inject(hermes_history, framed, {1})
     second_user_message_index = hermes_history.user_turn_indices[1]
-    touched = [
-        m.index for m in injected.history.messages if framed.rendered_text in m.content
-    ]
+    touched = [m.index for m in injected.history.messages if framed.rendered_text in m.content]
     assert touched == [second_user_message_index]
 
 
@@ -153,9 +151,7 @@ def test_inject_raises_when_result_exceeds_the_compactor_window(
         )
 
 
-def test_injected_history_records_provenance(
-    hermes_history: History, catalog: SCCatalog
-) -> None:
+def test_injected_history_records_provenance(hermes_history: History, catalog: SCCatalog) -> None:
     injected = inject(
         hermes_history,
         frame(catalog.by_id(3)),

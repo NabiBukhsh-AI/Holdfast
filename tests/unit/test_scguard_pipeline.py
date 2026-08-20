@@ -55,20 +55,28 @@ async def build_pipeline(
     store = InMemoryRegistryStore()
     await store.create_session(
         Session(
-            session_id=SESSION, tenant_id=TENANT,
-            extractor_model="qwen3.5-9b", prompt_hash="sha256:abc",
+            session_id=SESSION,
+            tenant_id=TENANT,
+            extractor_model="qwen3.5-9b",
+            prompt_hash="sha256:abc",
         )
     )
     audit = AuditEmitter()
     queue = ExtractionQueue(capacity=capacity, lease_seconds=0.05)
-    client = StubLLMClient(default_factory=lambda r: extractor_response)
-    extractor = SCExtractor(client, extraction_prompt(), "qwen3.5-9b", max_retries=0, retry_backoff_s=0.0)
+    client = StubLLMClient(default_factory=lambda _r: extractor_response)
+    extractor = SCExtractor(
+        client, extraction_prompt(), "qwen3.5-9b", max_retries=0, retry_backoff_s=0.0
+    )
     updater = RegistryUpdater(store, audit, mode="production", adjudicator=HeuristicAdjudicator())
     worker = ExtractionWorker(queue, extractor, updater, audit)
     service = AssemblyService(
-        store, queue, audit,
-        assembly_mode="delimited", budget_tokens=budget_tokens,
-        drain_timeout_ms=50, shadow_mode=shadow_mode,
+        store,
+        queue,
+        audit,
+        assembly_mode="delimited",
+        budget_tokens=budget_tokens,
+        drain_timeout_ms=50,
+        shadow_mode=shadow_mode,
     )
     return store, queue, audit, worker, service
 
@@ -189,9 +197,13 @@ async def test_assembly_attaches_the_registry() -> None:
     store, _, _, _, service = await build_pipeline()
     await store.append(
         build_constraint(
-            session_id=SESSION, tenant_id=TENANT, seq=0,
+            session_id=SESSION,
+            tenant_id=TENANT,
+            seq=0,
             canonical_text="Draft emails instead of sending them.",
-            category=SCCategory.ACTION, source_turn_index=1, token_count=12,
+            category=SCCategory.ACTION,
+            source_turn_index=1,
+            token_count=12,
         )
     )
     result = await service.compact(
@@ -228,12 +240,10 @@ async def test_drain_timeout_sets_incomplete() -> None:
 
 
 async def test_drain_completes_when_nothing_is_pending() -> None:
-    store, queue, _, worker, service = await build_pipeline()
+    _store, queue, _, worker, service = await build_pipeline()
     await queue.enqueue(SESSION, TENANT, 0, USER_TURN)
     await worker.drain_all()
-    result = await service.compact(
-        SESSION, TENANT, compaction_index=0, compacted_summary="summary"
-    )
+    result = await service.compact(SESSION, TENANT, compaction_index=0, compacted_summary="summary")
     assert result.registry_incomplete is False
 
 
@@ -242,9 +252,13 @@ async def test_double_compaction_single_block() -> None:
     store, _, _, _, service = await build_pipeline()
     await store.append(
         build_constraint(
-            session_id=SESSION, tenant_id=TENANT, seq=0,
-            canonical_text="Confirm before acting.", category=SCCategory.ACTION,
-            source_turn_index=1, token_count=8,
+            session_id=SESSION,
+            tenant_id=TENANT,
+            seq=0,
+            canonical_text="Confirm before acting.",
+            category=SCCategory.ACTION,
+            source_turn_index=1,
+            token_count=8,
         )
     )
     first = await service.compact(
@@ -254,7 +268,9 @@ async def test_double_compaction_single_block() -> None:
 
     # The harness hands the previously augmented context back as the next compaction input.
     second = await service.compact(
-        SESSION, TENANT, compaction_index=1,
+        SESSION,
+        TENANT,
+        compaction_index=1,
         compacted_summary=first.augmented_context + "\n\nmore work happened",
     )
     assert count_registry_blocks(second.augmented_context) == 1
@@ -267,16 +283,18 @@ async def test_store_failure_returns_503_not_empty_registry() -> None:
     store, _, _, _, service = await build_pipeline()
     await store.append(
         build_constraint(
-            session_id=SESSION, tenant_id=TENANT, seq=0,
-            canonical_text="Never send email.", category=SCCategory.ACTION,
-            source_turn_index=0, token_count=6,
+            session_id=SESSION,
+            tenant_id=TENANT,
+            seq=0,
+            canonical_text="Never send email.",
+            category=SCCategory.ACTION,
+            source_turn_index=0,
+            token_count=6,
         )
     )
     store.set_available(False)
     with pytest.raises(RegistryUnavailableError):
-        await service.compact(
-            SESSION, TENANT, compaction_index=0, compacted_summary="summary"
-        )
+        await service.compact(SESSION, TENANT, compaction_index=0, compacted_summary="summary")
 
 
 async def test_eviction_surfaces_as_a_warning() -> None:
@@ -289,14 +307,16 @@ async def test_eviction_surfaces_as_a_warning() -> None:
     ):
         await store.append(
             build_constraint(
-                session_id=SESSION, tenant_id=TENANT, seq=seq,
-                canonical_text=text, category=category,
-                source_turn_index=seq, token_count=tokens,
+                session_id=SESSION,
+                tenant_id=TENANT,
+                seq=seq,
+                canonical_text=text,
+                category=category,
+                source_turn_index=seq,
+                token_count=tokens,
             )
         )
-    result = await service.compact(
-        SESSION, TENANT, compaction_index=0, compacted_summary="summary"
-    )
+    result = await service.compact(SESSION, TENANT, compaction_index=0, compacted_summary="summary")
     assert result.registry.evicted_count == 1
     codes = {warning.code for warning in result.warnings}
     assert "REGISTRY_EVICTED" in codes
@@ -309,9 +329,13 @@ async def test_shadow_mode_records_but_does_not_inject() -> None:
     store, _, audit, _, service = await build_pipeline(shadow_mode=True)
     await store.append(
         build_constraint(
-            session_id=SESSION, tenant_id=TENANT, seq=0,
-            canonical_text="Never send email.", category=SCCategory.ACTION,
-            source_turn_index=0, token_count=6,
+            session_id=SESSION,
+            tenant_id=TENANT,
+            seq=0,
+            canonical_text="Never send email.",
+            category=SCCategory.ACTION,
+            source_turn_index=0,
+            token_count=6,
         )
     )
     result = await service.compact(
@@ -321,7 +345,9 @@ async def test_shadow_mode_records_but_does_not_inject() -> None:
     assert result.registry.active_count == 1
     assert result.registry.injected_count == 0
     assert "SHADOW_MODE" in {warning.code for warning in result.warnings}
-    assert audit.events(SESSION, AuditEventType.ASSEMBLY_PERFORMED)[0].payload["shadow_mode"] is True
+    assert (
+        audit.events(SESSION, AuditEventType.ASSEMBLY_PERFORMED)[0].payload["shadow_mode"] is True
+    )
 
 
 async def test_assembly_emits_an_audit_record() -> None:
@@ -335,7 +361,7 @@ async def test_assembly_emits_an_audit_record() -> None:
 
 async def test_end_to_end_turn_to_augmented_context() -> None:
     """The whole path: submit a turn, extract it, compact, and see the constraint attached."""
-    store, queue, _, worker, service = await build_pipeline(
+    _store, queue, _, worker, service = await build_pipeline(
         extractor_response=extraction_payload(
             {
                 "canonical_text": "Draft emails instead of sending them.",
@@ -347,9 +373,13 @@ async def test_end_to_end_turn_to_augmented_context() -> None:
     await queue.enqueue(SESSION, TENANT, 7, USER_TURN)
     await worker.drain_all()
     result = await service.compact(
-        SESSION, TENANT, compaction_index=0,
+        SESSION,
+        TENANT,
+        compaction_index=0,
         compacted_summary="<summary>The user reorganized their calendar.</summary>",
     )
     assert result.registry_incomplete is False
     assert "Draft emails instead of sending them." in result.augmented_context
-    assert result.augmented_context.index("calendar") < result.augmented_context.index("Draft emails")
+    assert result.augmented_context.index("calendar") < result.augmented_context.index(
+        "Draft emails"
+    )

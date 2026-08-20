@@ -217,9 +217,14 @@ class ComplianceHarness:
             # Spec 14.10: at 220K the probe window is exceeded on the long context conditions.
             # A distinct status, not an error, and not a silently truncated context.
             return self._record(
-                condition, framed_sc, mcq, instance_id, None, ProbeStatus.OVERFLOW,
-                context_tokens, f"context {context_tokens} exceeds probe window "
-                f"{self._probe_context_limit}",
+                condition,
+                framed_sc,
+                mcq,
+                instance_id,
+                None,
+                ProbeStatus.OVERFLOW,
+                context_tokens,
+                f"context {context_tokens} exceeds probe window {self._probe_context_limit}",
             )
 
         request = LLMRequest(
@@ -233,23 +238,47 @@ class ComplianceHarness:
             response = await self._client.complete(request)
         except ContextOverflowError as exc:
             return self._record(
-                condition, framed_sc, mcq, instance_id, None, ProbeStatus.OVERFLOW,
-                context_tokens, str(exc),
+                condition,
+                framed_sc,
+                mcq,
+                instance_id,
+                None,
+                ProbeStatus.OVERFLOW,
+                context_tokens,
+                str(exc),
             )
         except ProviderRefusalError as exc:
             return self._record(
-                condition, framed_sc, mcq, instance_id, None, ProbeStatus.REFUSED,
-                context_tokens, str(exc),
+                condition,
+                framed_sc,
+                mcq,
+                instance_id,
+                None,
+                ProbeStatus.REFUSED,
+                context_tokens,
+                str(exc),
             )
         except ContentFilterError as exc:
             return self._record(
-                condition, framed_sc, mcq, instance_id, None, ProbeStatus.BLOCKED,
-                context_tokens, str(exc),
+                condition,
+                framed_sc,
+                mcq,
+                instance_id,
+                None,
+                ProbeStatus.BLOCKED,
+                context_tokens,
+                str(exc),
             )
         except (ProviderTimeoutError, ProviderError) as exc:
             return self._record(
-                condition, framed_sc, mcq, instance_id, None, ProbeStatus.ERROR,
-                context_tokens, str(exc),
+                condition,
+                framed_sc,
+                mcq,
+                instance_id,
+                None,
+                ProbeStatus.ERROR,
+                context_tokens,
+                str(exc),
             )
 
         answer = parse_answer(response.text)
@@ -317,7 +346,13 @@ class ComplianceHarness:
                 )
                 records.append(
                     self._record(
-                        condition, framed_sc, mcq, instance_id, None, status, 0,
+                        condition,
+                        framed_sc,
+                        mcq,
+                        instance_id,
+                        None,
+                        status,
+                        0,
                         "compaction did not produce a probeable context",
                     )
                 )

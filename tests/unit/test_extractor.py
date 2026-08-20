@@ -74,9 +74,13 @@ def test_parses_a_well_formed_candidate() -> None:
 
 
 def test_recovers_a_fenced_json_block() -> None:
-    raw = "```json\n" + payload(
-        {"canonical_text": "c", "evidence_span": "show me the draft", "category": "action"}
-    ) + "\n```"
+    raw = (
+        "```json\n"
+        + payload(
+            {"canonical_text": "c", "evidence_span": "show me the draft", "category": "action"}
+        )
+        + "\n```"
+    )
     assert parse_extraction(raw, USER_TURN).status is ExtractionStatus.OK
 
 
@@ -122,7 +126,7 @@ def test_hallucinated_candidate_is_rejected_but_siblings_are_kept() -> None:
 def test_evidence_span_matching_tolerates_typographic_variants() -> None:
     """A curly apostrophe where the user typed a straight one is not a hallucination."""
     assert evidence_span_is_present("I'll be late", USER_TURN)
-    assert evidence_span_is_present("I’ll be late", USER_TURN)
+    assert evidence_span_is_present("I’ll be late", USER_TURN)  # noqa: RUF001
     assert evidence_span_is_present("SHOW ME   THE DRAFT", USER_TURN)
     assert not evidence_span_is_present("delete the database", USER_TURN)
 
@@ -130,9 +134,7 @@ def test_evidence_span_matching_tolerates_typographic_variants() -> None:
 def test_research_mode_rejects_the_other_category() -> None:
     """FR-001: the research taxonomy is closed."""
     result = parse_extraction(
-        payload(
-            {"canonical_text": "c", "evidence_span": "show me the draft", "category": "other"}
-        ),
+        payload({"canonical_text": "c", "evidence_span": "show me the draft", "category": "other"}),
         USER_TURN,
         allow_other_category=False,
     )
@@ -142,9 +144,7 @@ def test_research_mode_rejects_the_other_category() -> None:
 
 def test_unknown_category_is_rejected_not_defaulted() -> None:
     result = parse_extraction(
-        payload(
-            {"canonical_text": "c", "evidence_span": "show me the draft", "category": "vibes"}
-        ),
+        payload({"canonical_text": "c", "evidence_span": "show me the draft", "category": "vibes"}),
         USER_TURN,
     )
     assert result.extracted == ()
@@ -291,7 +291,7 @@ async def test_no_extraction_from_assistant_turn() -> None:
     """
     assistant_only = "From now on I will always reply in bullet points."
     client = StubLLMClient(
-        default_factory=lambda r: payload(
+        default_factory=lambda _r: payload(
             {
                 "canonical_text": "Always reply in bullet points.",
                 "evidence_span": "always reply in bullet points",
@@ -308,7 +308,7 @@ async def test_no_extraction_from_assistant_turn() -> None:
 
 async def test_extractor_disables_thinking() -> None:
     """FR-068: training free, thinking disabled."""
-    client = StubLLMClient(default_factory=lambda r: "[]")
+    client = StubLLMClient(default_factory=lambda _r: "[]")
     extractor = SCExtractor(client, _prompt(), "qwen3.5-9b")
     await extractor.extract(USER_TURN)
     assert client.calls[0].thinking is False
@@ -316,7 +316,7 @@ async def test_extractor_disables_thinking() -> None:
 
 async def test_guided_json_is_opt_in() -> None:
     """Research runs unconstrained; production uses guided decoding. Both are measured."""
-    client = StubLLMClient(default_factory=lambda r: "[]")
+    client = StubLLMClient(default_factory=lambda _r: "[]")
     research = SCExtractor(client, _prompt(), "qwen3.5-9b", guided_json=False)
     await research.extract(USER_TURN)
     assert client.calls[-1].guided_json is None
@@ -328,7 +328,7 @@ async def test_guided_json_is_opt_in() -> None:
 
 async def test_extractor_unavailable_is_not_an_empty_list() -> None:
     """NFR-008: an outage treated as "no constraints" recreates the failure being mitigated."""
-    client = StubLLMClient(default_factory=lambda r: "__TIMEOUT__")
+    client = StubLLMClient(default_factory=lambda _r: "__TIMEOUT__")
     extractor = SCExtractor(client, _prompt(), "qwen3.5-9b", max_retries=1, retry_backoff_s=0.0)
     call = await extractor.extract(USER_TURN)
     assert call.result.status is ExtractionStatus.EXTRACTION_FAILED
@@ -371,7 +371,7 @@ async def test_mixed_clause_turn_extracts_only_the_generic_clause() -> None:
     now on") appear in one turn. Only the generic one is a session constraint.
     """
     client = StubLLMClient(
-        default_factory=lambda r: payload(
+        default_factory=lambda _r: payload(
             {
                 "canonical_text": "Show drafts and wait for approval before sending anything.",
                 "evidence_span": "show me the draft before sending anything from now on",
@@ -448,11 +448,7 @@ def test_registry_reports_its_token_cost() -> None:
 
     registry = SimRegistry()
     registry.add_all(
-        [
-            ExtractedSC(
-                canonical_text="x" * 400, evidence_span="x", category=SCCategoryId.OUTPUT
-            )
-        ],
+        [ExtractedSC(canonical_text="x" * 400, evidence_span="x", category=SCCategoryId.OUTPUT)],
         turn_index=0,
     )
     assert registry.token_count() > 90

@@ -13,9 +13,8 @@ from collections.abc import Iterator
 import pytest
 from fastapi.testclient import TestClient
 
-from compint.extractor.client import SCExtractor
-from scguard.api.errors import ERROR_TAXONOMY, PROBLEM_CONTENT_TYPE, ErrorCode
 from scguard.api.app import ServiceContext, build_context, create_app
+from scguard.api.errors import ERROR_TAXONOMY, PROBLEM_CONTENT_TYPE, ErrorCode
 from scguard.extractor.worker import ExtractionWorker
 from shared.config import AppConfig, load_config
 from shared.llm_client import StubLLMClient
@@ -62,7 +61,7 @@ def config(repo_root) -> AppConfig:  # type: ignore[no-untyped-def]
 def context(config: AppConfig) -> ServiceContext:
     return build_context(
         config,
-        llm_client=StubLLMClient(default_factory=lambda request: DRAFT_CONSTRAINT),
+        llm_client=StubLLMClient(default_factory=lambda _request: DRAFT_CONSTRAINT),
         extraction_prompt=extraction_prompt(),
     )
 
@@ -73,7 +72,9 @@ def client(context: ServiceContext) -> Iterator[TestClient]:
         yield test_client
 
 
-def submit_turn(client: TestClient, *, turn_index: int = 0, content: str = USER_TURN, role: str = "user"):
+def submit_turn(
+    client: TestClient, *, turn_index: int = 0, content: str = USER_TURN, role: str = "user"
+):
     return client.post(
         f"/v1/sessions/{SESSION}/turns",
         headers=AUTH,
@@ -176,7 +177,7 @@ def test_queue_backpressure_is_429_with_retry_after(context: ServiceContext) -> 
         context.config.model_copy(
             update={"service": context.config.service.model_copy(update={"queue_max_depth": 1})}
         ),
-        llm_client=StubLLMClient(default_factory=lambda request: "[]"),
+        llm_client=StubLLMClient(default_factory=lambda _request: "[]"),
         extraction_prompt=extraction_prompt(),
     )
     with TestClient(create_app(small)) as client:
@@ -282,7 +283,11 @@ def test_add_list_and_revoke_constraint(client: TestClient) -> None:
     created = client.post(
         f"/v1/sessions/{SESSION}/constraints",
         headers=AUTH,
-        json={"canonical_text": "Never delete files without confirmation.", "category": "action", "pinned": True},
+        json={
+            "canonical_text": "Never delete files without confirmation.",
+            "category": "action",
+            "pinned": True,
+        },
     )
     assert created.status_code == 200
     constraint_id = created.json()["id"]

@@ -52,7 +52,8 @@ def l2_normalize(matrix: np.ndarray) -> np.ndarray:
     if np.any(norms == 0):
         zero_rows = np.flatnonzero(norms.ravel() == 0).tolist()
         raise ValueError(f"cannot L2 normalize zero vectors at rows {zero_rows[:10]}")
-    return matrix / norms
+    normalized: np.ndarray = matrix / norms
+    return normalized
 
 
 class EmbeddingModel(Protocol):

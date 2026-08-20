@@ -141,7 +141,9 @@ def topic_cohesive_stitch(
                     f"pool exhausted after {len(used)} samples at "
                     f"{sum(m.token_count for m in messages)} tokens, target {target_tokens}"
                 )
-                logger.warning("stitch_pool_exhausted", extra={"dataset": dataset, "detail": detail})
+                logger.warning(
+                    "stitch_pool_exhausted", extra={"dataset": dataset, "detail": detail}
+                )
                 break
 
             # Line 11: normalize ONLY at query time.
@@ -154,13 +156,13 @@ def topic_cohesive_stitch(
             centroid = (mean_vector / norm).astype(np.float32)
 
             # FR-017: initial w = k + |H~|, doubling on exhaustion, raising at the cap.
-            candidate = index.nearest_available(
-                centroid, available, initial_w=knn_k + len(used)
-            )
+            candidate = index.nearest_available(centroid, available, initial_w=knn_k + len(used))
 
             appended = conversations[candidate]
             appended_messages = (
-                _strip_leading_system(appended.messages) if strip_system else list(appended.messages)
+                _strip_leading_system(appended.messages)
+                if strip_system
+                else list(appended.messages)
             )
             messages.extend(appended_messages)
             n_from_last_sample = len(appended_messages)

@@ -40,9 +40,7 @@ FIXTURES = json.loads(
 @pytest.mark.parametrize("case", FIXTURES["cases"], ids=lambda c: c["id"])
 def test_er_paper_fixtures(case: dict[str, object]) -> None:
     """Reproduce Table 2's ER column from its own compliance columns, within 0.15 pp."""
-    result = effect_retention(
-        float(case["c_comp"]), float(case["c_lctx"]), float(case["c_ub"])
-    )
+    result = effect_retention(float(case["c_comp"]), float(case["c_lctx"]), float(case["c_ub"]))
     assert result.status.value == case["expected_status"]
     assert result.percent is not None
     assert result.percent == pytest.approx(
@@ -53,9 +51,7 @@ def test_er_paper_fixtures(case: dict[str, object]) -> None:
 @pytest.mark.parametrize("case", FIXTURES["hazard_cases"], ids=lambda c: c["id"])
 def test_er_numerical_hazards(case: dict[str, object]) -> None:
     """Spec 6.12: degenerate denominator, negative ER, and ER above 1 are all flagged."""
-    result = effect_retention(
-        float(case["c_comp"]), float(case["c_lctx"]), float(case["c_ub"])
-    )
+    result = effect_retention(float(case["c_comp"]), float(case["c_lctx"]), float(case["c_ub"]))
     assert result.status.value == case["expected_status"]
     if case["expected_status"] == "DEGENERATE_DENOMINATOR":
         assert result.value is None
@@ -114,7 +110,9 @@ def test_wilson_rejects_impossible_counts() -> None:
         wilson_interval(10, 5)
 
 
-def _probe(condition: str, answer: str | None, gold: str = "A", status: ProbeStatus = ProbeStatus.OK) -> ProbeRecord:
+def _probe(
+    condition: str, answer: str | None, gold: str = "A", status: ProbeStatus = ProbeStatus.OK
+) -> ProbeRecord:
     return ProbeRecord(
         instance_id="i",
         sc_id=1,
@@ -149,7 +147,9 @@ def test_compliance_rate_refuses_empty_denominator() -> None:
         compliance_rate([_probe("comp", None, status=ProbeStatus.ERROR)])
 
 
-def _retention(verdict: str | None, status: RetentionStatus = RetentionStatus.OK) -> RetentionRecord:
+def _retention(
+    verdict: str | None, status: RetentionStatus = RetentionStatus.OK
+) -> RetentionRecord:
     return RetentionRecord(
         instance_id="i",
         sc_id=1,

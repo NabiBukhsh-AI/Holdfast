@@ -10,9 +10,9 @@ from scguard.audit.emitter import (
     active_at_turn,
     reconstruct_at_turn,
 )
-from scguard.registry.budget import enforce_budget, eviction_priority, evicted_summary
+from scguard.registry.budget import enforce_budget, evicted_summary, eviction_priority
 from scguard.registry.store import (
-    AppendOnlyViolation,
+    AppendOnlyViolationError,
     DuplicateConstraintError,
     InMemoryRegistryStore,
     RegistryUnavailableError,
@@ -77,7 +77,7 @@ async def test_append_only_enforced() -> None:
     """TASK-022 acceptance: updating a constraint's text via the repository raises."""
     store = await make_store()
     row = await store.append(constraint(0, "Never send email."))
-    with pytest.raises(AppendOnlyViolation, match="append only"):
+    with pytest.raises(AppendOnlyViolationError, match="append only"):
         await store.replace_text(SESSION, row.constraint_id, "Always send email.")
 
 
@@ -100,7 +100,7 @@ async def test_supersede_constraint_check() -> None:
     old = await store.append(constraint(0, "Confirm before running commands."))
     new = await store.append(constraint(1, "Never confirm, just run commands."))
 
-    with pytest.raises(AppendOnlyViolation, match="names nothing that superseded it"):
+    with pytest.raises(AppendOnlyViolationError, match="names nothing that superseded it"):
         await store.set_status(SESSION, old.constraint_id, SCStatus.SUPERSEDED, None)
 
     tombstoned = await store.set_status(
@@ -114,7 +114,7 @@ async def test_supersede_constraint_check() -> None:
 async def test_supersession_pointer_rejected_on_non_superseded_status() -> None:
     store = await make_store()
     row = await store.append(constraint(0, "Never send email."))
-    with pytest.raises(AppendOnlyViolation, match="carries a supersession pointer"):
+    with pytest.raises(AppendOnlyViolationError, match="carries a supersession pointer"):
         await store.set_status(SESSION, row.constraint_id, SCStatus.REVOKED, "sc_other")
 
 
@@ -168,9 +168,7 @@ def test_severity_ordering() -> None:
         constraint(3, "Never write my phone number.", SCCategory.INFORMATION, tokens=20),
         constraint(4, "Confirm before any action.", SCCategory.ACTION, tokens=20),
     ]
-    decision = enforce_budget(
-        constraints, 50, audit=audit, session_id=SESSION, tenant_id=TENANT
-    )
+    decision = enforce_budget(constraints, 50, audit=audit, session_id=SESSION, tenant_id=TENANT)
     kept_categories = {row.category for row in decision.kept}
     evicted_categories = {row.category for row in decision.evicted}
     assert SCCategory.ACTION in kept_categories
@@ -185,9 +183,7 @@ def test_eviction_emits_audit() -> None:
     constraints = [
         constraint(i, f"constraint number {i}", SCCategory.OUTPUT, tokens=40) for i in range(5)
     ]
-    decision = enforce_budget(
-        constraints, 100, audit=audit, session_id=SESSION, tenant_id=TENANT
-    )
+    decision = enforce_budget(constraints, 100, audit=audit, session_id=SESSION, tenant_id=TENANT)
     events = audit.events(SESSION, AuditEventType.REGISTRY_EVICTED)
     assert len(events) == decision.n_evicted > 0
     for event in events:
@@ -201,9 +197,7 @@ def test_oversized_single_constraint_not_truncated() -> None:
     """A half constraint can invert meaning: "Don't send emails without" ... (spec 14.7)."""
     audit = AuditEmitter()
     huge = constraint(0, "A very long constraint. " * 40, SCCategory.ACTION, tokens=500)
-    decision = enforce_budget(
-        [huge], 200, audit=audit, session_id=SESSION, tenant_id=TENANT
-    )
+    decision = enforce_budget([huge], 200, audit=audit, session_id=SESSION, tenant_id=TENANT)
     assert decision.kept == (huge,)
     assert decision.budget_exceeded_single is True
     assert decision.over_budget is True
@@ -276,18 +270,30 @@ def test_point_in_time_reconstruction() -> None:
     """TASK-028 acceptance: rebuild registry state at turn N from the audit stream alone."""
     audit = AuditEmitter()
     audit.emit(
-        SESSION, TENANT, AuditEventType.CONSTRAINT_ADDED,
-        constraint_id="sc_1", turn_index=2,
-        canonical_text="Confirm before running commands.", category="action",
+        SESSION,
+        TENANT,
+        AuditEventType.CONSTRAINT_ADDED,
+        constraint_id="sc_1",
+        turn_index=2,
+        canonical_text="Confirm before running commands.",
+        category="action",
     )
     audit.emit(
-        SESSION, TENANT, AuditEventType.CONSTRAINT_ADDED,
-        constraint_id="sc_2", turn_index=7,
-        canonical_text="Never confirm, just run commands.", category="action",
+        SESSION,
+        TENANT,
+        AuditEventType.CONSTRAINT_ADDED,
+        constraint_id="sc_2",
+        turn_index=7,
+        canonical_text="Never confirm, just run commands.",
+        category="action",
     )
     audit.emit(
-        SESSION, TENANT, AuditEventType.CONSTRAINT_SUPERSEDED,
-        constraint_id="sc_1", turn_index=7, superseded_by="sc_2",
+        SESSION,
+        TENANT,
+        AuditEventType.CONSTRAINT_SUPERSEDED,
+        constraint_id="sc_1",
+        turn_index=7,
+        superseded_by="sc_2",
     )
 
     at_turn_5 = reconstruct_at_turn(audit.events(SESSION), 5)
@@ -306,13 +312,21 @@ def test_reconstruction_reflects_eviction() -> None:
     """An evicted constraint must be visible as evicted, not merely absent."""
     audit = AuditEmitter()
     audit.emit(
-        SESSION, TENANT, AuditEventType.CONSTRAINT_ADDED,
-        constraint_id="sc_1", turn_index=1,
-        canonical_text="Bullets only.", category="output",
+        SESSION,
+        TENANT,
+        AuditEventType.CONSTRAINT_ADDED,
+        constraint_id="sc_1",
+        turn_index=1,
+        canonical_text="Bullets only.",
+        category="output",
     )
     audit.emit(
-        SESSION, TENANT, AuditEventType.REGISTRY_EVICTED,
-        constraint_id="sc_1", turn_index=4, reason="BUDGET_EXCEEDED",
+        SESSION,
+        TENANT,
+        AuditEventType.REGISTRY_EVICTED,
+        constraint_id="sc_1",
+        turn_index=4,
+        reason="BUDGET_EXCEEDED",
     )
     state = reconstruct_at_turn(audit.events(SESSION), 10)
     assert state[0].status is SCStatus.EVICTED
@@ -322,17 +336,27 @@ def test_reconstruction_reflects_eviction() -> None:
 def test_reconstruction_ignores_later_turns() -> None:
     audit = AuditEmitter()
     audit.emit(
-        SESSION, TENANT, AuditEventType.CONSTRAINT_ADDED,
-        constraint_id="sc_1", turn_index=9,
-        canonical_text="Later constraint.", category="action",
+        SESSION,
+        TENANT,
+        AuditEventType.CONSTRAINT_ADDED,
+        constraint_id="sc_1",
+        turn_index=9,
+        canonical_text="Later constraint.",
+        category="action",
     )
     assert reconstruct_at_turn(audit.events(SESSION), 3) == ()
 
 
 def test_loud_events_are_distinguishable() -> None:
     audit = AuditEmitter()
-    audit.emit(SESSION, TENANT, AuditEventType.CONSTRAINT_ADDED, constraint_id="sc_1",
-               canonical_text="x", category="action")
+    audit.emit(
+        SESSION,
+        TENANT,
+        AuditEventType.CONSTRAINT_ADDED,
+        constraint_id="sc_1",
+        canonical_text="x",
+        category="action",
+    )
     audit.emit(SESSION, TENANT, AuditEventType.REGISTRY_EVICTED, constraint_id="sc_1")
     audit.emit(SESSION, TENANT, AuditEventType.EXTRACTION_FAILED, turn_index=3)
     loud = audit.loud_events(SESSION)
@@ -344,9 +368,21 @@ def test_loud_events_are_distinguishable() -> None:
 
 def test_audit_events_are_scoped_by_session() -> None:
     audit = AuditEmitter()
-    audit.emit("sess_a", TENANT, AuditEventType.CONSTRAINT_ADDED, constraint_id="sc_1",
-               canonical_text="x", category="action")
-    audit.emit("sess_b", TENANT, AuditEventType.CONSTRAINT_ADDED, constraint_id="sc_2",
-               canonical_text="y", category="action")
+    audit.emit(
+        "sess_a",
+        TENANT,
+        AuditEventType.CONSTRAINT_ADDED,
+        constraint_id="sc_1",
+        canonical_text="x",
+        category="action",
+    )
+    audit.emit(
+        "sess_b",
+        TENANT,
+        AuditEventType.CONSTRAINT_ADDED,
+        constraint_id="sc_2",
+        canonical_text="y",
+        category="action",
+    )
     assert len(audit.events("sess_a")) == 1
     assert len(audit) == 2

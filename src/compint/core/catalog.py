@@ -12,6 +12,7 @@ conflict detector is tested against (TASK-023).
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from pathlib import Path
 
 import yaml
@@ -76,7 +77,13 @@ class SCCatalog(BaseModel):
     def __len__(self) -> int:
         return len(self.constraints)
 
-    def __iter__(self):  # type: ignore[override]
+    def iter_constraints(self) -> Iterator[SideConstraint]:
+        """Iterate the catalog in id order.
+
+        Named rather than __iter__ because BaseModel already defines __iter__ with a
+        different contract (field pairs), and silently overriding it would make a catalog
+        behave one way in this codebase and another way inside pydantic.
+        """
         return iter(self.constraints)
 
 

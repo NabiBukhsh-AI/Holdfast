@@ -86,7 +86,7 @@ def build_context(
     store = InMemoryRegistryStore()
     audit = AuditEmitter()
     queue = ExtractionQueue(capacity=config.service.queue_max_depth)
-    client = llm_client or StubLLMClient(default_factory=lambda request: "[]")
+    client = llm_client or StubLLMClient(default_factory=lambda _request: "[]")
     extractor = SCExtractor(
         client,
         extraction_prompt,
@@ -201,14 +201,10 @@ def create_app(context: ServiceContext) -> FastAPI:
         request: Request, exc: RegistryUnavailableError
     ) -> JSONResponse:
         # Spec 18.2: 503, never an empty registry.
-        return problem_response(
-            APIError(ErrorCode.REGISTRY_UNAVAILABLE, str(exc)), request
-        )
+        return problem_response(APIError(ErrorCode.REGISTRY_UNAVAILABLE, str(exc)), request)
 
     @app.exception_handler(SessionNotFoundError)
-    async def handle_session_not_found(
-        request: Request, exc: SessionNotFoundError
-    ) -> JSONResponse:
+    async def handle_session_not_found(request: Request, exc: SessionNotFoundError) -> JSONResponse:
         return problem_response(APIError(ErrorCode.SESSION_NOT_FOUND, str(exc)), request)
 
     @app.exception_handler(BudgetNotConfiguredError)
@@ -233,6 +229,6 @@ def create_app(context: ServiceContext) -> FastAPI:
 
 def get_context(request: Request) -> ServiceContext:
     context = getattr(request.app.state, "context", None)
-    if context is None:
+    if not isinstance(context, ServiceContext):
         raise APIError(ErrorCode.REGISTRY_UNAVAILABLE, "service context is not initialized")
     return context

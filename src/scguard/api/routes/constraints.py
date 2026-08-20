@@ -7,6 +7,7 @@ constraint explicitly, and revoke one. Revocation TOMBSTONES; it never deletes (
 from __future__ import annotations
 
 from datetime import datetime
+
 from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -151,9 +152,7 @@ async def add_constraint(
     raise APIError(ErrorCode.CONSTRAINT_NOT_FOUND, "the constraint was not persisted")
 
 
-@router.delete(
-    "/sessions/{session_id}/constraints/{constraint_id}", response_model=ConstraintView
-)
+@router.delete("/sessions/{session_id}/constraints/{constraint_id}", response_model=ConstraintView)
 async def revoke_constraint(
     session_id: str, constraint_id: str, request: Request
 ) -> ConstraintView:

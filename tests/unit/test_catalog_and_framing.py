@@ -66,7 +66,9 @@ def test_free_generation_subset_matches_paper(catalog: SCCatalog) -> None:
 def test_catalog_rejects_wrong_shape(tmp_path: Path, repo_root: Path) -> None:
     import yaml
 
-    raw = yaml.safe_load((repo_root / "data" / "sc_catalog" / "v1.yaml").read_text(encoding="utf-8"))
+    raw = yaml.safe_load(
+        (repo_root / "data" / "sc_catalog" / "v1.yaml").read_text(encoding="utf-8")
+    )
     raw["constraints"] = raw["constraints"][:14]
     broken = tmp_path / "broken.yaml"
     broken.write_text(yaml.safe_dump(raw), encoding="utf-8")
@@ -140,9 +142,9 @@ def test_framing_table_covers_the_full_2x2() -> None:
 
 def test_framing_does_not_lowercase_an_acronym() -> None:
     """Lowercasing a leading acronym would corrupt the constraint text."""
-    assert render_framing("URL shorteners are banned.", Strength.STRICT, Explicitness.CONTEXTUALIZED) == (
-        "This is an important constraint: URL shorteners are banned."
-    )
+    assert render_framing(
+        "URL shorteners are banned.", Strength.STRICT, Explicitness.CONTEXTUALIZED
+    ) == ("This is an important constraint: URL shorteners are banned.")
 
 
 def test_frame_stamps_template_version(catalog: SCCatalog) -> None:

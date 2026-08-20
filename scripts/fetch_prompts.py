@@ -30,7 +30,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from shared.prompts import REQUIRED_FETCHED_PROMPTS, PromptRegistry  # noqa: E402
+from shared.prompts import PromptRegistry  # noqa: E402
 
 REFERENCE_REPO = "https://github.com/ZhiqiEliWang/compaction-integrity"
 
@@ -103,9 +103,7 @@ def yaml_quote(value: str) -> str:
     return json.dumps(value)
 
 
-def render_prompt_yaml(
-    target: FetchTarget, text: str, fetched_at: str, origin: str
-) -> str:
+def render_prompt_yaml(target: FetchTarget, text: str, fetched_at: str, origin: str) -> str:
     """Write the prompt verbatim in a block scalar, with full provenance."""
     indented = "\n".join(f"  {line}" if line else "" for line in text.split("\n"))
     lines = [
@@ -185,7 +183,9 @@ def report_status() -> int:
         return 0
     print("  BLOCKING GATE CLOSED. Missing:")
     for requirement in missing:
-        print(f"    {requirement.prompt_id} ({requirement.unknown_id}) -> {requirement.relative_path}")
+        print(
+            f"    {requirement.prompt_id} ({requirement.unknown_id}) -> {requirement.relative_path}"
+        )
         print(f"      source: {requirement.source_hint}")
     return 1
 

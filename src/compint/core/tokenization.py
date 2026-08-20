@@ -78,7 +78,7 @@ class TiktokenTokenizer:
         if max_tokens <= 0:
             return ""
         ids = self._encoding.encode(text, disallowed_special=())[:max_tokens]
-        return self._encoding.decode(ids)
+        return str(self._encoding.decode(ids))
 
 
 class HuggingFaceTokenizer:

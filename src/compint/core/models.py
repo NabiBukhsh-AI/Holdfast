@@ -139,9 +139,7 @@ class Conversation(BaseModel):
     def to_history(self) -> History:
         """Reindex messages from zero and present them as a History."""
         return History(
-            messages=tuple(
-                m.model_copy(update={"index": i}) for i, m in enumerate(self.messages)
-            )
+            messages=tuple(m.model_copy(update={"index": i}) for i, m in enumerate(self.messages))
         )
 
 

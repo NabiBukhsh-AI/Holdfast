@@ -11,8 +11,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from compint.core.catalog import SCCatalog, load_catalog  # noqa: E402
-from compint.core.models import Conversation  # noqa: E402
-from compint.core.models import History, Message, Role  # noqa: E402
+from compint.core.models import (  # noqa: E402
+    Conversation,
+    History,
+    Message,
+    Role,
+)
 from compint.core.random_source import RandomSource  # noqa: E402
 from compint.core.taxonomy import Taxonomy, load_taxonomy  # noqa: E402
 from compint.core.tokenization import HeuristicTokenizer, Tokenizer  # noqa: E402
@@ -61,9 +65,7 @@ def rng() -> RandomSource:
 
 
 def build_message(index: int, role: Role, content: str) -> Message:
-    return Message(
-        index=index, role=role, content=content, token_count=max(1, len(content) // 4)
-    )
+    return Message(index=index, role=role, content=content, token_count=max(1, len(content) // 4))
 
 
 @pytest.fixture
@@ -159,7 +161,7 @@ def build_conversation(
     words: int = 40,
     system: bool = False,
     tools: bool = False,
-) -> "Conversation":
+) -> Conversation:
     """Synthetic source conversation with controllable topic and shape.
 
     `topic` drives the text content, so the stub embedding model (which hashes content) gives
@@ -201,17 +203,16 @@ def build_conversation(
 
 
 @pytest.fixture
-def wildchat_corpus() -> list["Conversation"]:
+def wildchat_corpus() -> list[Conversation]:
     """120 conversations across four topics, no system prompts, no tools."""
     topics = ("alpha", "beta", "gamma", "delta")
     return [
-        build_conversation("wildchat", i, n_user_turns=3, topic=topics[i % 4])
-        for i in range(120)
+        build_conversation("wildchat", i, n_user_turns=3, topic=topics[i % 4]) for i in range(120)
     ]
 
 
 @pytest.fixture
-def hermes_corpus() -> list["Conversation"]:
+def hermes_corpus() -> list[Conversation]:
     """60 conversations, each opening with a system prompt and carrying tool traffic."""
     topics = ("alpha", "beta", "gamma")
     return [
@@ -223,9 +224,11 @@ def hermes_corpus() -> list["Conversation"]:
 
 
 @pytest.fixture
-def openresearcher_corpus() -> list["Conversation"]:
+def openresearcher_corpus() -> list[Conversation]:
     """20 long single user turn trajectories."""
     return [
-        build_conversation("openresearcher", i, n_user_turns=1, topic="research", words=400, tools=True)
+        build_conversation(
+            "openresearcher", i, n_user_turns=1, topic="research", words=400, tools=True
+        )
         for i in range(20)
     ]

@@ -111,8 +111,7 @@ class ExtractionQueue:
         return sum(
             1
             for job in self._jobs.values()
-            if not job.is_terminal
-            and (session_id is None or job.session_id == session_id)
+            if not job.is_terminal and (session_id is None or job.session_id == session_id)
         )
 
     def get(self, job_id: str) -> ExtractionJob | None:
@@ -174,9 +173,7 @@ class ExtractionQueue:
                 continue
             if now - job.claimed_at < self._lease:
                 continue
-            requeued = job.model_copy(
-                update={"status": JobStatus.QUEUED, "claimed_at": None}
-            )
+            requeued = job.model_copy(update={"status": JobStatus.QUEUED, "claimed_at": None})
             self._jobs[job_id] = requeued
             self._pending.append(job_id)
             reclaimed.append(requeued)
@@ -235,9 +232,7 @@ class ExtractionQueue:
         if job is None:
             raise HoldFastError(f"job {job_id} does not exist")
         if job.attempts >= self._max_attempts:
-            return self.complete(
-                job_id, status=JobStatus.FAILED, error_detail=error_detail
-            )
+            return self.complete(job_id, status=JobStatus.FAILED, error_detail=error_detail)
         requeued = job.model_copy(
             update={"status": JobStatus.QUEUED, "claimed_at": None, "error_detail": error_detail}
         )

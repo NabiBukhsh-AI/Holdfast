@@ -185,10 +185,13 @@ class RegistryUpdater:
                 )
                 if verdict is Adjudication.DUPLICATE:
                     self._audit.emit(
-                        session_id, tenant_id,
+                        session_id,
+                        tenant_id,
                         AuditEventType.CONSTRAINT_DUPLICATE_SUPPRESSED,
                         constraint_id=flagged.existing.constraint_id,
-                        turn_index=turn_index, tier=4, canonical_text=canonical_text,
+                        turn_index=turn_index,
+                        tier=4,
+                        canonical_text=canonical_text,
                     )
                     return CandidateResult(
                         canonical_text=canonical_text,

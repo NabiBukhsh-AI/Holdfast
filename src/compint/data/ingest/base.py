@@ -16,7 +16,7 @@ from collections.abc import Iterable, Iterator
 from enum import StrEnum
 from typing import Any, Protocol
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 from compint.core.models import Conversation, Message, Role
 from compint.core.tokenization import Tokenizer
@@ -116,7 +116,7 @@ class BaseAdapter:
         self._tokenizer = tokenizer
         self._turns_key = turns_key
 
-    def _extract_turns(self, row: dict[str, Any]) -> list[dict[str, Any]] | None:
+    def _extract_turns(self, row: dict[str, Any]) -> list[Any] | None:
         for key in (self._turns_key, "conversation", "conversations", "messages", "turns"):
             value = row.get(key)
             if isinstance(value, list):
@@ -124,8 +124,9 @@ class BaseAdapter:
         return None
 
     def _build_messages(
-        self, turns: list[dict[str, Any]]
+        self, turns: list[Any]
     ) -> tuple[list[Message], QuarantineReason | None, str]:
+        """Turns arrive from upstream JSON, so each element is genuinely unknown here."""
         messages: list[Message] = []
         for position, turn in enumerate(turns):
             if not isinstance(turn, dict):

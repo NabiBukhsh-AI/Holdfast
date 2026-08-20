@@ -55,9 +55,7 @@ def test_suite_covers_multiple_attack_classes() -> None:
 
 def test_envelope_escape_payloads_cannot_close_the_data_block() -> None:
     """Structural half of the defense: user content cannot terminate its own envelope."""
-    escapes = [
-        case for case in load_suite(SUITE_PATH) if case.attack_class == "envelope_escape"
-    ]
+    escapes = [case for case in load_suite(SUITE_PATH) if case.attack_class == "envelope_escape"]
     assert escapes, "the suite must exercise envelope escape"
     for case in escapes:
         envelope = build_data_envelope(case.user_turn, None, ())
@@ -119,7 +117,9 @@ async def test_prompt_injection_suite(injection_threshold: float = 0.05) -> None
     from shared.llm_client import OpenAICompatibleClient
     from shared.prompts import get_registry
 
-    config = load_config(Path(__file__).resolve().parents[2] / "configs" / "production" / "dev.yaml")
+    config = load_config(
+        Path(__file__).resolve().parents[2] / "configs" / "production" / "dev.yaml"
+    )
     prompts = get_registry(str(Path(__file__).resolve().parents[2] / "prompts"))
     prompts.assert_fetch_gate_open()
     assert config.llm.base_url is not None, "a real endpoint is required for this measurement"

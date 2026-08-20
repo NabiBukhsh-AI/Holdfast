@@ -76,9 +76,7 @@ def build_compactor(
     """Construct one compactor by id. Fails loudly on a missing dependency."""
     spec = COMPACTOR_SPECS.get(compactor_id)
     if spec is None:
-        raise ConfigError(
-            f"unknown compactor {compactor_id}. Known: {sorted(COMPACTOR_SPECS)}"
-        )
+        raise ConfigError(f"unknown compactor {compactor_id}. Known: {sorted(COMPACTOR_SPECS)}")
     if spec.family == "truncation":
         return RecentNCompactor(config.compaction.recent_n, tokenizer, compactor_id=spec.id)
     if spec.family == "extractive":

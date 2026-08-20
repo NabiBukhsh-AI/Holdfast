@@ -100,6 +100,6 @@ async def submit_turn(
         session_id=session_id,
         turn_index=payload.turn_index,
         extraction_job_id=job.job_id,
-        status=job.status.value,  # type: ignore[arg-type]
+        status=job.status.value,
         registry_version=session.registry_version,
     )

@@ -68,7 +68,9 @@ class SimRegistry:
         """The registry as passed into the extraction prompt for deduplication only."""
         return tuple(entry.canonical_text for entry in self._entries)
 
-    def add_all(self, candidates: Sequence[ExtractedSC], *, turn_index: int) -> tuple[SimEntry, ...]:
+    def add_all(
+        self, candidates: Sequence[ExtractedSC], *, turn_index: int
+    ) -> tuple[SimEntry, ...]:
         """Append every non duplicate candidate. Returns what was actually added.
 
         Exact duplicate suppression happens here as a backstop. The paper's primary mechanism

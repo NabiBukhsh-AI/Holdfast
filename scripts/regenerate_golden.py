@@ -14,9 +14,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from compint.core.catalog import load_catalog  # noqa: E402
-from compint.core.framing import TEMPLATE_VERSION, all_framings  # noqa: E402
-from shared.prompts import PromptRegistry  # noqa: E402
+from compint.core.catalog import load_catalog
+from compint.core.framing import TEMPLATE_VERSION, all_framings
+from shared.prompts import PromptRegistry
 
 ROOT = Path(__file__).resolve().parents[1]
 GOLDEN = ROOT / "tests" / "golden"

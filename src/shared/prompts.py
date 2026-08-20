@@ -155,7 +155,11 @@ class PromptRegistry:
             # Integrity: a stored hash that no longer matches means the file was edited in
             # place after fetching. That silently invalidates every result row citing it.
             if prompt.sha256 is not None:
-                stored = prompt.sha256 if prompt.sha256.startswith("sha256:") else f"sha256:{prompt.sha256}"
+                stored = (
+                    prompt.sha256
+                    if prompt.sha256.startswith("sha256:")
+                    else f"sha256:{prompt.sha256}"
+                )
                 if stored != prompt.content_hash:
                     raise PromptIntegrityError(
                         f"prompt {prompt.id} at {path} has stored hash {stored} but its text "
@@ -172,12 +176,8 @@ class PromptRegistry:
             return prompt
         requirement = _REQUIRED_BY_ID.get(prompt_id)
         if requirement is not None:
-            raise PromptNotFetchedError(
-                prompt_id, requirement.unknown_id, requirement.source_hint
-            )
-        raise ConfigError(
-            f"unknown prompt id {prompt_id}. Known ids: {sorted(self._prompts)}"
-        )
+            raise PromptNotFetchedError(prompt_id, requirement.unknown_id, requirement.source_hint)
+        raise ConfigError(f"unknown prompt id {prompt_id}. Known ids: {sorted(self._prompts)}")
 
     def has(self, prompt_id: str) -> bool:
         return prompt_id in self._prompts

@@ -90,9 +90,7 @@ class ExtractionResult(BaseModel):
     @property
     def n_hallucinated(self) -> int:
         """Emitted as a metric. A rising rate means the SLM is inventing evidence."""
-        return sum(
-            1 for r in self.rejected if r.reason is RejectionReason.HALLUCINATED_EVIDENCE
-        )
+        return sum(1 for r in self.rejected if r.reason is RejectionReason.HALLUCINATED_EVIDENCE)
 
 
 # The extractor is instructed to emit a bare JSON list. Some models wrap it in a fence or
@@ -108,10 +106,12 @@ def _normalize_for_match(text: str) -> str:
     has not hallucinated it. Normalizing here keeps the check honest without making it so
     strict that it rejects faithful spans.
     """
+    # The noqa directives below are justified: this function exists to FOLD typographic
+    # punctuation, so it has to name the characters it folds.
     folded = unicodedata.normalize("NFKC", text)
-    folded = folded.replace("’", "'").replace("‘", "'")
+    folded = folded.replace("’", "'").replace("‘", "'")  # noqa: RUF001
     folded = folded.replace("“", '"').replace("”", '"')
-    folded = folded.replace("–", "-").replace("—", "-")
+    folded = folded.replace("–", "-").replace("—", "-")  # noqa: RUF001  # allow-dash
     return re.sub(r"\s+", " ", folded).strip().lower()
 
 

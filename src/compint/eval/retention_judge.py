@@ -222,9 +222,7 @@ def parser_leniency_delta(records: list[RetentionRecord]) -> dict[str, int]:
             else:
                 recovered_no += 1
     return {
-        "unparseable_strict": sum(
-            1 for r in records if r.status is RetentionStatus.UNPARSEABLE
-        ),
+        "unparseable_strict": sum(1 for r in records if r.status is RetentionStatus.UNPARSEABLE),
         "recovered_by_normalization_yes": recovered_yes,
         "recovered_by_normalization_no": recovered_no,
     }

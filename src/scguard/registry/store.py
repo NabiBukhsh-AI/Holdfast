@@ -57,7 +57,7 @@ CATEGORY_SEVERITY: dict[SCCategory, int] = {
 }
 
 
-class AppendOnlyViolation(HoldFastError):
+class AppendOnlyViolationError(HoldFastError):
     """An attempt to mutate immutable constraint text or provenance."""
 
 
@@ -287,9 +287,19 @@ class InMemoryRegistryStore:
         )
         return updated
 
-    async def replace_text(self, session_id: str, constraint_id: str, text: str) -> None:
-        """Exists only to fail. TASK-022 acceptance: updating text via the repository raises."""
-        raise AppendOnlyViolation(
+    async def replace_text(
+        self,
+        session_id: str,  # noqa: ARG002 - present so a text rewrite cannot even be expressed
+        constraint_id: str,
+        text: str,  # noqa: ARG002 - see above
+    ) -> None:
+        """Exists only to fail. TASK-022 acceptance: updating text via the repository raises.
+
+        The parameters are unused on purpose. They exist so that the shape of a text rewrite is
+        representable in the type system and always terminates in a raise, rather than being
+        absent and therefore quietly added later by someone who needs it.
+        """
+        raise AppendOnlyViolationError(
             f"session_constraints is append only (FR-080). Constraint {constraint_id} text is "
             "immutable; tombstone it and append a replacement instead."
         )
@@ -302,12 +312,12 @@ class InMemoryRegistryStore:
 def _assert_supersede_invariant(row: SessionConstraint) -> None:
     """ck_supersede_status, mirrored in application code."""
     if row.status is SCStatus.SUPERSEDED and row.superseded_by is None:
-        raise AppendOnlyViolation(
+        raise AppendOnlyViolationError(
             f"constraint {row.constraint_id} is superseded but names nothing that superseded "
             "it; the supersession pointer is what makes the history reconstructible"
         )
     if row.status is not SCStatus.SUPERSEDED and row.superseded_by is not None:
-        raise AppendOnlyViolation(
+        raise AppendOnlyViolationError(
             f"constraint {row.constraint_id} carries a supersession pointer but its status is "
             f"{row.status.value}"
         )
@@ -327,7 +337,7 @@ def _assert_append_only(before: SessionConstraint, after: SessionConstraint) -> 
     )
     for field in immutable:
         if getattr(before, field) != getattr(after, field):
-            raise AppendOnlyViolation(
+            raise AppendOnlyViolationError(
                 f"constraint {before.constraint_id} field {field} is immutable (FR-080)"
             )
 

@@ -172,12 +172,8 @@ def estimate_cost(
     # UNKNOWN: per model prices are deployment specific and are not in the paper. With no
     # price table configured the projection reports zero dollars and says so, rather than
     # inventing a rate that would make the gate meaningless.
-    mean_input_price = (
-        sum(input_prices.values()) / len(input_prices) if input_prices else 0.0
-    )
-    mean_output_price = (
-        sum(output_prices.values()) / len(output_prices) if output_prices else 0.0
-    )
+    mean_input_price = sum(input_prices.values()) / len(input_prices) if input_prices else 0.0
+    mean_output_price = sum(output_prices.values()) / len(output_prices) if output_prices else 0.0
     estimated_usd = (
         estimated_input / 1000 * mean_input_price + estimated_output / 1000 * mean_output_price
     )

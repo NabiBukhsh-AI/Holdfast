@@ -50,7 +50,9 @@ def make_context(index: int, dataset: str = "wildchat", user_turns: int = 5) -> 
 FRAMING = FramingSpec(strength=Strength.PREFERENTIAL, explicitness=Explicitness.DIRECT)
 
 
-def build_default_grid(n_contexts: int = 50, n_scs: int = 15, compactors: tuple[str, ...] = ("recent_5",)):
+def build_default_grid(
+    n_contexts: int = 50, n_scs: int = 15, compactors: tuple[str, ...] = ("recent_5",)
+):
     return build_grid(
         [make_context(i) for i in range(n_contexts)],
         list(range(1, n_scs + 1)),
@@ -96,8 +98,13 @@ def test_grid_marks_degenerate_contexts() -> None:
     """FR-023 travels with the cell, so the report can mark it rather than infer it."""
     degenerate = make_context(0, dataset="openresearcher", user_turns=1)
     cells = build_grid(
-        [degenerate], [1], ("recent_5",), framing=FRAMING,
-        condition=InjectionCondition.TOP, injection_seed=1, prompt_hashes={},
+        [degenerate],
+        [1],
+        ("recent_5",),
+        framing=FRAMING,
+        condition=InjectionCondition.TOP,
+        injection_seed=1,
+        prompt_hashes={},
     )
     assert cells[0].degenerate is True
 
@@ -222,22 +229,37 @@ def test_manifest_with_unfetched_prompts_is_not_reportable(
 ) -> None:
     """A run that could not fetch its prompts produces no headline number, and says so."""
     blocked = build_manifest(
-        "run_0002", base_config, catalog_version="v1", taxonomy_version="v1",
-        prompt_hashes={}, unfetched_prompts=("anthropic",), repo_root=repo_root,
+        "run_0002",
+        base_config,
+        catalog_version="v1",
+        taxonomy_version="v1",
+        prompt_hashes={},
+        unfetched_prompts=("anthropic",),
+        repo_root=repo_root,
     )
     assert blocked.is_reportable is False
 
     clear = build_manifest(
-        "run_0003", base_config, catalog_version="v1", taxonomy_version="v1",
-        prompt_hashes={}, unfetched_prompts=(), repo_root=repo_root,
+        "run_0003",
+        base_config,
+        catalog_version="v1",
+        taxonomy_version="v1",
+        prompt_hashes={},
+        unfetched_prompts=(),
+        repo_root=repo_root,
     )
     assert clear.is_reportable is True
 
 
 def test_dev_split_manifest_is_not_reportable(base_config: AppConfig, repo_root: Path) -> None:
     manifest = build_manifest(
-        "run_0004", base_config, catalog_version="v1", taxonomy_version="v1",
-        prompt_hashes={}, split="dev", repo_root=repo_root,
+        "run_0004",
+        base_config,
+        catalog_version="v1",
+        taxonomy_version="v1",
+        prompt_hashes={},
+        split="dev",
+        repo_root=repo_root,
     )
     assert manifest.is_reportable is False
 
@@ -246,8 +268,12 @@ def test_manifest_round_trips_to_disk(
     base_config: AppConfig, tmp_path: Path, repo_root: Path
 ) -> None:
     manifest = build_manifest(
-        "run_0005", base_config, catalog_version="v1", taxonomy_version="v1",
-        prompt_hashes={"mcq_probe": "sha256:xyz"}, repo_root=repo_root,
+        "run_0005",
+        base_config,
+        catalog_version="v1",
+        taxonomy_version="v1",
+        prompt_hashes={"mcq_probe": "sha256:xyz"},
+        repo_root=repo_root,
     )
     path = manifest.write(tmp_path)
     assert path.is_file()

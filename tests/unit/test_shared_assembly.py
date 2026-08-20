@@ -95,7 +95,11 @@ def test_strip_is_idempotent() -> None:
 def test_report_counts_are_reported() -> None:
     out = assemble(
         "summary",
-        [Entry(canonical_text="a"), Entry(canonical_text="b"), Entry(canonical_text="c", is_active=False)],
+        [
+            Entry(canonical_text="a"),
+            Entry(canonical_text="b"),
+            Entry(canonical_text="c", is_active=False),
+        ],
         mode="delimited",
     )
     assert out.report.active_count == 2

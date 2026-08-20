@@ -81,9 +81,7 @@ def wilson_interval(successes: int, n: int, confidence: float = 0.95) -> WilsonI
     spread = z * math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n)
     lower = (centre - spread) / denominator
     upper = (centre + spread) / denominator
-    return WilsonInterval(
-        lower=max(0.0, lower), upper=min(1.0, upper), confidence=confidence
-    )
+    return WilsonInterval(lower=max(0.0, lower), upper=min(1.0, upper), confidence=confidence)
 
 
 class RateResult(BaseModel):
@@ -109,14 +107,9 @@ class RateResult(BaseModel):
     def format(self) -> str:
         """The canonical rendering: rate, interval, denominator, exclusions."""
         excluded = (
-            f", excluded {self.n_excluded} ({self.exclusion_reasons})"
-            if self.n_excluded
-            else ""
+            f", excluded {self.n_excluded} ({self.exclusion_reasons})" if self.n_excluded else ""
         )
-        return (
-            f"{self.percent:.1f}% {self.wilson_ci.format_pp()} "
-            f"n={self.n_valid}{excluded}"
-        )
+        return f"{self.percent:.1f}% {self.wilson_ci.format_pp()} n={self.n_valid}{excluded}"
 
 
 class RetentionResult(RateResult):
@@ -170,9 +163,7 @@ class EffectRetentionResult(BaseModel):
         return f"{self.value * 100:.1f}%{suffix}"
 
 
-def retention_rate(
-    records: Sequence[RetentionRecord], confidence: float = 0.95
-) -> RetentionResult:
+def retention_rate(records: Sequence[RetentionRecord], confidence: float = 0.95) -> RetentionResult:
     """Aggregate Equation 6 over an evaluation set.
 
     FR-041 and FR-043: UNPARSEABLE and BLOCKED are excluded from the denominator and counted,
@@ -200,9 +191,7 @@ def retention_rate(
     )
 
 
-def compliance_rate(
-    records: Sequence[ProbeRecord], confidence: float = 0.95
-) -> ComplianceResult:
+def compliance_rate(records: Sequence[ProbeRecord], confidence: float = 0.95) -> ComplianceResult:
     """Equation 8. Returns the rate plus the diagnostic counts the paper omits."""
     valid = [r for r in records if r.status is ProbeStatus.OK and r.answer is not None]
     if not valid:

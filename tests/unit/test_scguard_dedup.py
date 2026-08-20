@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from compint.core.catalog import SCCatalog
 from scguard.audit.emitter import AuditEmitter, AuditEventType
@@ -35,8 +34,10 @@ async def make_updater(
     store = InMemoryRegistryStore()
     await store.create_session(
         Session(
-            session_id=SESSION, tenant_id=TENANT,
-            extractor_model="qwen3.5-9b", prompt_hash="sha256:abc",
+            session_id=SESSION,
+            tenant_id=TENANT,
+            extractor_model="qwen3.5-9b",
+            prompt_hash="sha256:abc",
         )
     )
     audit = AuditEmitter()
@@ -51,10 +52,16 @@ async def make_updater(
     return updater, store, audit
 
 
-async def add(updater: RegistryUpdater, text: str, category: SCCategory, turn: int, tokens: int = 15):
+async def add(
+    updater: RegistryUpdater, text: str, category: SCCategory, turn: int, tokens: int = 15
+):
     return await updater.add_candidate(
-        SESSION, TENANT,
-        canonical_text=text, category=category, turn_index=turn, token_count=tokens,
+        SESSION,
+        TENANT,
+        canonical_text=text,
+        category=category,
+        turn_index=turn,
+        token_count=tokens,
     )
 
 
@@ -110,7 +117,7 @@ def test_opposing_polarity_on_the_catalog_pair(catalog: SCCatalog) -> None:
 
 
 def test_unrelated_constraints_do_not_oppose(catalog: SCCatalog) -> None:
-    """"Never send email" and "always use metric" are not a conflict."""
+    """ "Never send email" and "always use metric" are not a conflict."""
     assert not (action_classes(catalog.by_id(3).body) & action_classes(catalog.by_id(11).body))
 
 
@@ -153,7 +160,10 @@ async def test_semantic_duplicate_is_suppressed_above_tau() -> None:
     assert result.outcome is CandidateOutcome.DUPLICATE_SEMANTIC
     assert result.similarity is not None and result.similarity >= 0.9
     assert len(await store.active(SESSION)) == 1
-    assert audit.events(SESSION, AuditEventType.CONSTRAINT_DUPLICATE_SUPPRESSED)[0].payload["tier"] == 2
+    assert (
+        audit.events(SESSION, AuditEventType.CONSTRAINT_DUPLICATE_SUPPRESSED)[0].payload["tier"]
+        == 2
+    )
 
 
 async def test_below_tau_is_not_a_duplicate() -> None:
@@ -169,7 +179,7 @@ async def test_below_tau_is_not_a_duplicate() -> None:
 
 async def test_tier_two_is_skipped_when_tau_is_unset() -> None:
     """UNKNOWN tau_dup: never hardcoded, so with no value tier 2 simply does not run."""
-    updater, store, _ = await make_updater(tau_dup=None, embedder=None)
+    updater, _store, _ = await make_updater(tau_dup=None, embedder=None)
     await add(updater, "Draft emails instead of sending.", SCCategory.ACTION, 1)
     result = await add(updater, "Write emails as drafts, do not send.", SCCategory.ACTION, 2)
     assert result.outcome is CandidateOutcome.ADDED
@@ -240,7 +250,10 @@ async def test_added_candidate_emits_an_audit_event() -> None:
 
 async def test_heuristic_adjudicator_verdicts(catalog: SCCatalog) -> None:
     adjudicator = HeuristicAdjudicator()
-    assert await adjudicator.adjudicate("Never send email.", "Never send email.") is Adjudication.DUPLICATE
+    assert (
+        await adjudicator.adjudicate("Never send email.", "Never send email.")
+        is Adjudication.DUPLICATE
+    )
     assert (
         await adjudicator.adjudicate(catalog.by_id(1).body, catalog.by_id(2).body)
         is Adjudication.CONFLICT
@@ -256,7 +269,7 @@ async def test_llm_adjudicator_defaults_to_independent_on_unparseable() -> None:
     from scguard.registry.conflicts import LLMAdjudicator
     from shared.llm_client import StubLLMClient
 
-    adjudicator = LLMAdjudicator(StubLLMClient(default_factory=lambda r: "unclear"), "model")
+    adjudicator = LLMAdjudicator(StubLLMClient(default_factory=lambda _r: "unclear"), "model")
     assert await adjudicator.adjudicate("a", "b") is Adjudication.INDEPENDENT
 
 
@@ -264,9 +277,13 @@ def test_find_conflict_candidates_reports_its_reason(catalog: SCCatalog) -> None
     from scguard.registry.store import build_constraint
 
     existing = build_constraint(
-        session_id=SESSION, tenant_id=TENANT, seq=0,
-        canonical_text=catalog.by_id(2).body, category=SCCategory.ACTION,
-        source_turn_index=0, token_count=20,
+        session_id=SESSION,
+        tenant_id=TENANT,
+        seq=0,
+        canonical_text=catalog.by_id(2).body,
+        category=SCCategory.ACTION,
+        source_turn_index=0,
+        token_count=20,
     )
     flagged = find_conflict_candidates(catalog.by_id(1).body, [existing])
     assert len(flagged) == 1

@@ -19,9 +19,9 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from compint.eval.metrics import WilsonInterval, wilson_interval
 from compint.extractor.client import SCExtractor
 from compint.extractor.parser import ExtractionStatus
-from compint.eval.metrics import WilsonInterval, wilson_interval
 
 
 class SuiteCase(BaseModel):
@@ -139,10 +139,7 @@ async def run_suite(
 
         observed = len(result.extracted) > 0
         # A parse error is a failure of the extractor, not a correct empty output.
-        case_passed = (
-            observed == case.expect_extraction
-            and result.status is ExtractionStatus.OK
-        )
+        case_passed = observed == case.expect_extraction and result.status is ExtractionStatus.OK
         if case_passed:
             passed += 1
         else:
@@ -224,10 +221,6 @@ def precision_recall(
         true_positives=true_positives,
         false_positives=false_positives,
         false_negatives=false_negatives,
-        precision_ci=wilson_interval(
-            true_positives, true_positives + false_positives, confidence
-        ),
-        recall_ci=wilson_interval(
-            true_positives, true_positives + false_negatives, confidence
-        ),
+        precision_ci=wilson_interval(true_positives, true_positives + false_positives, confidence),
+        recall_ci=wilson_interval(true_positives, true_positives + false_negatives, confidence),
     )

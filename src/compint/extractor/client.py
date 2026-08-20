@@ -135,7 +135,10 @@ class SCExtractor:
                 current_user_message,
                 allow_other_category=self._allow_other_category,
             )
-            if result.status is ExtractionStatus.EXTRACTION_PARSE_ERROR and attempts <= self._max_retries:
+            if (
+                result.status is ExtractionStatus.EXTRACTION_PARSE_ERROR
+                and attempts <= self._max_retries
+            ):
                 last_error = result.detail
                 await asyncio.sleep(self._retry_backoff_s * attempts)
                 continue

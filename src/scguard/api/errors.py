@@ -42,7 +42,11 @@ ERROR_TAXONOMY: dict[ErrorCode, tuple[int, bool, str]] = {
     ErrorCode.SESSION_NOT_FOUND: (404, False, "Unknown session"),
     ErrorCode.CONSTRAINT_NOT_FOUND: (404, False, "Unknown constraint"),
     ErrorCode.TURN_CONFLICT: (409, False, "Same turn index, different content hash"),
-    ErrorCode.COMPACTION_CONFLICT: (409, False, "Compaction index already assembled with different input"),
+    ErrorCode.COMPACTION_CONFLICT: (
+        409,
+        False,
+        "Compaction index already assembled with different input",
+    ),
     ErrorCode.CONTENT_TOO_LARGE: (413, False, "Turn content exceeds the configured cap"),
     ErrorCode.BUDGET_INVALID: (422, False, "Registry budget unset or zero"),
     ErrorCode.RATE_LIMITED: (429, True, "Rate limit exceeded"),

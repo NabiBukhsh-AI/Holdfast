@@ -206,16 +206,13 @@ def build_messages(
             "U-03",
             "the released code of the paper; the paper prints only a structured summary",
         )
-    envelope = build_data_envelope(
-        current_user_message, previous_assistant_message, registry_texts
-    )
+    envelope = build_data_envelope(current_user_message, previous_assistant_message, registry_texts)
     body = prompt.user if prompt.user is not None else prompt.text
     if body is None:
         raise ConfigError(f"extraction prompt {prompt.id} carries no user body")
     # The fetched prompt may or may not declare a placeholder for the inputs. When it does,
     # bind it; when it does not, the envelope follows the instruction text.
-    if "{inputs}" in body:
-        user = body.replace("{inputs}", envelope)
-    else:
-        user = f"{body}\n\n{envelope}"
+    has_placeholder = "{inputs}" in body
+    trailing = f"{body}\n\n{envelope}"
+    user = body.replace("{inputs}", envelope) if has_placeholder else trailing
     return prompt.system, user

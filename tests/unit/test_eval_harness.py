@@ -62,11 +62,9 @@ def test_normalized_parser_recovers_punctuated_verdicts() -> None:
 async def test_judge_records_both_verdicts_and_never_coerces(
     prompts: PromptRegistry, catalog: SCCatalog
 ) -> None:
-    client = StubLLMClient(default_factory=lambda r: "Yes, it is present.")
+    client = StubLLMClient(default_factory=lambda _r: "Yes, it is present.")
     judge = RetentionJudge(client, prompts.get("retention_judge"), "gpt-5.4")
-    record = await judge.judge(
-        frame(catalog.by_id(1)), make_compacted("summary"), instance_id="i1"
-    )
+    record = await judge.judge(frame(catalog.by_id(1)), make_compacted("summary"), instance_id="i1")
     assert record.status is RetentionStatus.UNPARSEABLE
     assert record.verdict is None, "unparseable must never become 0 or 1"
     assert record.normalized_verdict == "YES"
@@ -75,7 +73,7 @@ async def test_judge_records_both_verdicts_and_never_coerces(
 
 
 async def test_judge_ok_verdict(prompts: PromptRegistry, catalog: SCCatalog) -> None:
-    client = StubLLMClient(default_factory=lambda r: "NO")
+    client = StubLLMClient(default_factory=lambda _r: "NO")
     judge = RetentionJudge(client, prompts.get("retention_judge"), "gpt-5.4")
     record = await judge.judge(
         frame(catalog.by_id(2)), make_compacted("a summary with no constraint"), instance_id="i"
@@ -87,7 +85,7 @@ async def test_judge_ok_verdict(prompts: PromptRegistry, catalog: SCCatalog) -> 
 
 async def test_judge_blocked_status(prompts: PromptRegistry, catalog: SCCatalog) -> None:
     """Spec 6.8: a reproducible WildChat hazard, counted rather than treated as an error."""
-    client = StubLLMClient(default_factory=lambda r: "__CONTENT_FILTER__")
+    client = StubLLMClient(default_factory=lambda _r: "__CONTENT_FILTER__")
     judge = RetentionJudge(client, prompts.get("retention_judge"), "gpt-5.4")
     record = await judge.judge(frame(catalog.by_id(5)), make_compacted("s"), instance_id="i")
     assert record.status is RetentionStatus.BLOCKED
@@ -98,7 +96,7 @@ async def test_judge_not_called_on_failed_compaction(
     prompts: PromptRegistry, catalog: SCCatalog
 ) -> None:
     """Spec 14.9: empty or wrapper only output is COMPACTION_FAILED, do not judge it."""
-    client = StubLLMClient(default_factory=lambda r: "YES")
+    client = StubLLMClient(default_factory=lambda _r: "YES")
     judge = RetentionJudge(client, prompts.get("retention_judge"), "gpt-5.4")
     record = await judge.judge(
         frame(catalog.by_id(1)),
@@ -111,7 +109,7 @@ async def test_judge_not_called_on_failed_compaction(
 
 async def test_judge_cache_hit(prompts: PromptRegistry, catalog: SCCatalog) -> None:
     """Spec 14.9: cached on (prompt_hash, sc_hash, context_hash) because reruns are common."""
-    client = StubLLMClient(default_factory=lambda r: "YES")
+    client = StubLLMClient(default_factory=lambda _r: "YES")
     judge = RetentionJudge(client, prompts.get("retention_judge"), "gpt-5.4")
     framed = frame(catalog.by_id(3))
     compacted = make_compacted("identical summary")
@@ -121,10 +119,8 @@ async def test_judge_cache_hit(prompts: PromptRegistry, catalog: SCCatalog) -> N
     assert judge.cache_hits == 1
 
 
-async def test_judge_cache_is_keyed_on_context(
-    prompts: PromptRegistry, catalog: SCCatalog
-) -> None:
-    client = StubLLMClient(default_factory=lambda r: "YES")
+async def test_judge_cache_is_keyed_on_context(prompts: PromptRegistry, catalog: SCCatalog) -> None:
+    client = StubLLMClient(default_factory=lambda _r: "YES")
     judge = RetentionJudge(client, prompts.get("retention_judge"), "gpt-5.4")
     framed = frame(catalog.by_id(3))
     await judge.judge(framed, make_compacted("summary one"), instance_id="i1")
@@ -202,7 +198,11 @@ def test_parse_answer_rejects_non_letters(raw: str) -> None:
 
 def _harness(prompts: PromptRegistry, client: StubLLMClient, **kwargs: object) -> ComplianceHarness:
     return ComplianceHarness(
-        client, prompts.get("mcq_probe"), "gpt-oss-120b", rng=RandomSource(7), **kwargs  # type: ignore[arg-type]
+        client,
+        prompts.get("mcq_probe"),
+        "gpt-oss-120b",
+        rng=RandomSource(7),
+        **kwargs,  # type: ignore[arg-type]
     )
 
 
@@ -213,7 +213,7 @@ async def test_klctx_computed_once_per_context(
     tokenizer: Tokenizer,
 ) -> None:
     """TASK-015 acceptance: a 15 SC run issues exactly one K_lctx build and one C(H^t)."""
-    client = StubLLMClient(default_factory=lambda r: "A")
+    client = StubLLMClient(default_factory=lambda _r: "A")
     harness = _harness(prompts, client)
     compactor = RecentNCompactor(5, tokenizer)
     cache = ContextCache()
@@ -242,7 +242,7 @@ async def test_comp_condition_compacts_per_sc(
     tokenizer: Tokenizer,
 ) -> None:
     """K_comp genuinely differs per SC, so it cannot be cached the way K_ub can."""
-    client = StubLLMClient(default_factory=lambda r: "A")
+    client = StubLLMClient(default_factory=lambda _r: "A")
     harness = _harness(prompts, client)
     compactor = RecentNCompactor(5, tokenizer)
     cache = ContextCache()
@@ -269,7 +269,7 @@ async def test_kub_uses_shared_assemble(
     """INV-5: K_ub is built by the same assemble() production uses."""
     from shared.assembly import assemble
 
-    client = StubLLMClient(default_factory=lambda r: "A")
+    client = StubLLMClient(default_factory=lambda _r: "A")
     harness = _harness(prompts, client, assembly_mode="delimited")
     compactor = RecentNCompactor(5, tokenizer)
     cache = ContextCache()
@@ -304,7 +304,7 @@ async def test_lctx_carries_no_sc_text(
     tokenizer: Tokenizer,
 ) -> None:
     """K_lctx is the baseline correction term: it must contain no constraint at all."""
-    client = StubLLMClient(default_factory=lambda r: "A")
+    client = StubLLMClient(default_factory=lambda _r: "A")
     harness = _harness(prompts, client)
     framed = frame(catalog.by_id(1))
     context, _ = await harness.build_condition_context(
@@ -319,10 +319,8 @@ async def test_lctx_carries_no_sc_text(
     assert framed.rendered_text not in context
 
 
-async def test_option_order_recorded(
-    prompts: PromptRegistry, catalog: SCCatalog
-) -> None:
-    client = StubLLMClient(default_factory=lambda r: "A")
+async def test_option_order_recorded(prompts: PromptRegistry, catalog: SCCatalog) -> None:
+    client = StubLLMClient(default_factory=lambda _r: "A")
     harness = _harness(prompts, client, option_order="randomized")
     record = await harness.probe("comp", "ctx", frame(catalog.by_id(1)), instance_id="i")
     assert record.option_order in ("AB", "BA")
@@ -333,7 +331,7 @@ async def test_overflow_is_a_distinct_status_not_an_error(
     prompts: PromptRegistry, catalog: SCCatalog
 ) -> None:
     """Spec 14.10: at 220K the probe window is exceeded on the long context conditions."""
-    client = StubLLMClient(default_factory=lambda r: "A")
+    client = StubLLMClient(default_factory=lambda _r: "A")
     harness = _harness(prompts, client, probe_context_limit=10)
     record = await harness.probe(
         "lctx", "x" * 400, frame(catalog.by_id(1)), instance_id="i", context_tokens=100
@@ -346,7 +344,7 @@ async def test_overflow_is_a_distinct_status_not_an_error(
 async def test_refusal_is_recorded_not_swallowed(
     prompts: PromptRegistry, catalog: SCCatalog
 ) -> None:
-    client = StubLLMClient(default_factory=lambda r: "__REFUSAL__")
+    client = StubLLMClient(default_factory=lambda _r: "__REFUSAL__")
     harness = _harness(prompts, client)
     record = await harness.probe("comp", "ctx", frame(catalog.by_id(6)), instance_id="i")
     assert record.status is ProbeStatus.REFUSED
@@ -359,7 +357,7 @@ async def test_failed_compaction_yields_a_record_not_an_exception(
     """A compaction that produced nothing must surface as a status, never as a silent skip."""
     from compint.core.models import Message, Role
 
-    client = StubLLMClient(default_factory=lambda r: "A")
+    client = StubLLMClient(default_factory=lambda _r: "A")
     harness = _harness(prompts, client)
     empty = History(
         messages=(Message(index=0, role=Role.USER, content="only turn", token_count=3),)

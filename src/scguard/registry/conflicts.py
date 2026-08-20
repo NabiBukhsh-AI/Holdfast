@@ -44,22 +44,40 @@ class Adjudication(StrEnum):
 # Counting "before" as a requiring marker cancels SC 1's negation and the pair stops looking
 # opposed, which is the one case this detector exists to catch.
 NEGATIVE_MARKERS = (
-    r"\bdon'?t\b", r"\bdo not\b", r"\bnever\b", r"\bno longer\b", r"\bstop\b",
-    r"\bavoid\b", r"\brefrain\b", r"\bwithout\b", r"\bskip\b",
+    r"\bdon'?t\b",
+    r"\bdo not\b",
+    r"\bnever\b",
+    r"\bno longer\b",
+    r"\bstop\b",
+    r"\bavoid\b",
+    r"\brefrain\b",
+    r"\bwithout\b",
+    r"\bskip\b",
 )
 # Only modal words that express requirement belong here. An ACTION phrase such as "ask me"
 # must not: it sits inside the negation's scope in "Don't ask me to confirm", so counting it
 # as a requiring marker cancels the negation. Action phrases belong to ACTION_CLASS_PATTERNS,
 # which is what the two constraints are compared ON, not what decides their direction.
 POSITIVE_MARKERS = (
-    r"\balways\b", r"\bmust\b", r"\bevery time\b", r"\bbe sure to\b", r"\brequire\b",
-    r"\bmake sure\b", r"\bwait for\b",
+    r"\balways\b",
+    r"\bmust\b",
+    r"\bevery time\b",
+    r"\bbe sure to\b",
+    r"\brequire\b",
+    r"\bmake sure\b",
+    r"\bwait for\b",
 )
 
 # Action classes the polarity attaches to. Two constraints must be about the same thing before
 # opposing polarity means anything: "never send email" and "always use metric" do not conflict.
 ACTION_CLASS_PATTERNS: dict[str, tuple[str, ...]] = {
-    "confirmation": (r"\bconfirm\b", r"\bapprov", r"\bgo-?ahead\b", r"\bpermission\b", r"\bask me\b"),
+    "confirmation": (
+        r"\bconfirm\b",
+        r"\bapprov",
+        r"\bgo-?ahead\b",
+        r"\bpermission\b",
+        r"\bask me\b",
+    ),
     "sending": (r"\bsend\b", r"\bemail\b", r"\bmessage\b", r"\bdraft\b"),
     "file_access": (r"\bfile\b", r"\bfolder\b", r"\bread\b", r"\bopen\b", r"\bdelete\b"),
     "search": (r"\bsearch\b", r"\bweb\b", r"\blook up\b"),

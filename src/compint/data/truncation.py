@@ -93,9 +93,7 @@ def concatenate_for_220k(
     That asymmetry is recorded on the context rather than left for a reader to infer.
     """
     if len(contexts) % 2 != 0:
-        raise ValueError(
-            f"pairing requires an even number of source contexts, got {len(contexts)}"
-        )
+        raise ValueError(f"pairing requires an even number of source contexts, got {len(contexts)}")
     paired: list[FillerContext] = []
     for position in range(0, len(contexts), 2):
         first, second = contexts[position], contexts[position + 1]

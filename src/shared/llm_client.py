@@ -214,7 +214,9 @@ class OpenAICompatibleClient:
                 raise ProviderError(f"transport failure calling {request.model}: {exc}") from exc
 
         if response.status_code == 400 and "context" in response.text.lower():
-            raise ContextOverflowError(f"{request.model} rejected the context: {response.text[:400]}")
+            raise ContextOverflowError(
+                f"{request.model} rejected the context: {response.text[:400]}"
+            )
         if response.status_code in (403, 451):
             raise ContentFilterError(f"{request.model} content filter: {response.text[:400]}")
         if response.status_code >= 400:

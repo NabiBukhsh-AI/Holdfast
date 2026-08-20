@@ -78,7 +78,7 @@ async def test_run_suite_scores_a_clean_negative_run() -> None:
     This checks the harness arithmetic, not the extractor. The real measurement needs the
     fetched prompt and is marked below.
     """
-    client = StubLLMClient(default_factory=lambda r: "[]")
+    client = StubLLMClient(default_factory=lambda _r: "[]")
     extractor = SCExtractor(client, _prompt(), "qwen3.5-9b")
     result = await run_suite(extractor, load_suite(NEGATIVE)[:20], suite_name="negative")
     assert result.n_passed == 20
@@ -89,7 +89,7 @@ async def test_run_suite_scores_a_clean_negative_run() -> None:
 
 async def test_extraction_failure_is_never_scored_as_a_pass() -> None:
     """An outage that produced no constraints is not evidence of correct restraint."""
-    client = StubLLMClient(default_factory=lambda r: "__TIMEOUT__")
+    client = StubLLMClient(default_factory=lambda _r: "__TIMEOUT__")
     extractor = SCExtractor(client, _prompt(), "qwen3.5-9b", max_retries=0, retry_backoff_s=0.0)
     result = await run_suite(extractor, load_suite(NEGATIVE)[:5], suite_name="negative")
     assert result.n_errored == 5
@@ -99,7 +99,7 @@ async def test_extraction_failure_is_never_scored_as_a_pass() -> None:
 
 
 async def test_parse_error_counts_as_a_failure_not_a_pass() -> None:
-    client = StubLLMClient(default_factory=lambda r: "I did not find anything.")
+    client = StubLLMClient(default_factory=lambda _r: "I did not find anything.")
     extractor = SCExtractor(client, _prompt(), "qwen3.5-9b", max_retries=0, retry_backoff_s=0.0)
     result = await run_suite(extractor, load_suite(NEGATIVE)[:3], suite_name="negative")
     assert result.n_failed == 3
@@ -139,7 +139,12 @@ def test_precision_is_undefined_rather_than_zero_with_no_positives() -> None:
     from compint.extractor.evaluation import SuiteResult
 
     empty = SuiteResult(
-        suite="mixed", n_cases=0, n_passed=0, n_failed=0, n_errored=0, wilson_ci=wilson_interval(0, 0)
+        suite="mixed",
+        n_cases=0,
+        n_passed=0,
+        n_failed=0,
+        n_errored=0,
+        wilson_ci=wilson_interval(0, 0),
     )
     report = precision_recall(empty, empty)
     with pytest.raises(ValueError, match="precision is undefined"):

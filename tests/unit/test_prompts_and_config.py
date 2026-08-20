@@ -141,9 +141,7 @@ def test_prompt_integrity_check_detects_post_fetch_edits(tmp_path: Path) -> None
 
 def test_fetched_prompt_without_source_url_is_rejected() -> None:
     with pytest.raises(ValueError, match="no source_url"):
-        Prompt.model_validate(
-            {"id": "x", "version": "v1", "provenance": "fetched", "text": "body"}
-        )
+        Prompt.model_validate({"id": "x", "version": "v1", "provenance": "fetched", "text": "body"})
 
 
 def test_render_rejects_missing_and_unknown_placeholders(prompts: PromptRegistry) -> None:
@@ -208,7 +206,20 @@ def test_manifest_unknowns_cover_the_spec_list(repo_root: Path) -> None:
     """NFR-017: every UNKNOWN and its chosen value lands in the run manifest."""
     config = load_config(repo_root / "configs" / "research" / "rq1_baseline.yaml")
     unknowns = config.unknowns()
-    for uid in ("U-04", "U-05", "U-06", "U-07", "U-08", "U-09", "U-10", "U-11", "U-12", "U-13", "U-14", "U-17"):
+    for uid in (
+        "U-04",
+        "U-05",
+        "U-06",
+        "U-07",
+        "U-08",
+        "U-09",
+        "U-10",
+        "U-11",
+        "U-12",
+        "U-13",
+        "U-14",
+        "U-17",
+    ):
         assert any(key.startswith(uid) for key in unknowns), f"{uid} missing from the manifest"
 
 

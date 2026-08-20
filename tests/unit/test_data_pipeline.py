@@ -7,12 +7,12 @@ import pytest
 
 from compint.core.models import Conversation, Message, Role
 from compint.core.tokenization import HeuristicTokenizer, Tokenizer, assert_reportable
-from compint.data.contexts import ContextStatus
 from compint.data.context_builder import (
     ContextBuilder,
     assert_no_source_leakage,
     summarize,
 )
+from compint.data.contexts import ContextStatus
 from compint.data.embedding import (
     StubEmbeddingModel,
     embed_conversations,
@@ -32,7 +32,6 @@ from compint.data.truncation import (
 from shared.config import AppConfig
 from shared.errors import ConfigError
 
-
 # ---------------------------------------------------------------- ingestion
 
 
@@ -41,9 +40,24 @@ def test_wildchat_no_system_messages(tokenizer: Tokenizer) -> None:
     adapter = build_adapter("wildchat", tokenizer)
     result = adapter.to_conversations(
         [
-            {"conversation": [{"role": "user", "content": "hi"}, {"role": "assistant", "content": "hello"}]},
-            {"conversation": [{"role": "system", "content": "sys"}, {"role": "user", "content": "hi"}]},
-            {"conversation": [{"role": "user", "content": "hi"}, {"role": "tool", "content": "res"}]},
+            {
+                "conversation": [
+                    {"role": "user", "content": "hi"},
+                    {"role": "assistant", "content": "hello"},
+                ]
+            },
+            {
+                "conversation": [
+                    {"role": "system", "content": "sys"},
+                    {"role": "user", "content": "hi"},
+                ]
+            },
+            {
+                "conversation": [
+                    {"role": "user", "content": "hi"},
+                    {"role": "tool", "content": "res"},
+                ]
+            },
         ]
     )
     assert len(result.conversations) == 1
@@ -79,7 +93,12 @@ def test_openresearcher_single_user_turn(tokenizer: Tokenizer) -> None:
     adapter = build_adapter("openresearcher", tokenizer)
     result = adapter.to_conversations(
         [
-            {"conversation": [{"role": "user", "content": "research x"}, {"role": "tool", "content": "r"}]},
+            {
+                "conversation": [
+                    {"role": "user", "content": "research x"},
+                    {"role": "tool", "content": "r"},
+                ]
+            },
             {"conversation": [{"role": "user", "content": "a"}, {"role": "user", "content": "b"}]},
         ]
     )
@@ -113,7 +132,12 @@ def test_quarantine_records_reason(tokenizer: Tokenizer) -> None:
 
 def test_duplicate_conversations_are_quarantined(tokenizer: Tokenizer) -> None:
     adapter = build_adapter("wildchat", tokenizer)
-    row = {"conversation": [{"role": "user", "content": "same"}, {"role": "assistant", "content": "text"}]}
+    row = {
+        "conversation": [
+            {"role": "user", "content": "same"},
+            {"role": "assistant", "content": "text"},
+        ]
+    }
     result = adapter.to_conversations([row, dict(row)])
     assert len(result.conversations) == 1
     assert result.reasons() == {"DUPLICATE_CONTENT": 1}
@@ -325,9 +349,7 @@ def test_centroid_is_unnormalized_sum(tokenizer: Tokenizer) -> None:
         Conversation(
             conversation_id=f"c{i}",
             dataset="wildchat",
-            messages=(
-                Message(index=0, role=Role.USER, content=f"text {i}", token_count=300),
-            ),
+            messages=(Message(index=0, role=Role.USER, content=f"text {i}", token_count=300),),
             token_count=300,
             source_index=i,
         )
